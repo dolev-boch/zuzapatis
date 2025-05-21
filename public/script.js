@@ -985,17 +985,32 @@ function adjustModalForMobile() {
 // Call this on page load and window resize
 window.addEventListener('resize', adjustModalForMobile);
 document.addEventListener('DOMContentLoaded', () => {
-  // Add this line to your existing DOMContentLoaded event
-  adjustModalForMobile();
-  // === Collage Carousel Functionality ===
-  // === Collage Carousel Functionality ===
   const collageTrack = document.getElementById('collage-track');
-  const totalSlides = 6;
+  const slides = collageTrack.querySelectorAll('.collage-slide');
   let currentSlide = 0;
   let autoPlayInterval;
   let isTransitioning = false;
 
-  // Preload all images
+  function nextSlide() {
+    if (!collageTrack || isTransitioning) return;
+
+    isTransitioning = true;
+    currentSlide = (currentSlide + 1) % slides.length;
+
+    const percent = 100 / slides.length;
+    const translateX = -(currentSlide * percent);
+    collageTrack.style.transform = `translateX(${translateX}%)`;
+
+    // Optional: update active class
+    slides.forEach((slide, idx) => {
+      slide.classList.toggle('active', idx === currentSlide);
+    });
+
+    setTimeout(() => {
+      isTransitioning = false;
+    }, 900);
+  }
+
   function preloadImages() {
     const images = collageTrack.querySelectorAll('img');
     let loadedCount = 0;
@@ -1014,32 +1029,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Auto-advance slides function
-  function nextSlide() {
-    if (!collageTrack || isTransitioning) return;
-
-    isTransitioning = true;
-    currentSlide = (currentSlide + 1) % totalSlides;
-
-    // Calculate exact transform percentage for 6 slides
-    const translateX = -(currentSlide * 16.666667);
-
-    collageTrack.style.transform = `translateX(${translateX}%)`;
-
-    // Reset transition flag after animation completes
-    setTimeout(() => {
-      isTransitioning = false;
-    }, 1200);
-  }
-
-  // Start auto-play
   function startAutoPlay() {
-    if (autoPlayInterval) return;
-
-    autoPlayInterval = setInterval(nextSlide, 4000); // 4 seconds
+    if (!autoPlayInterval) {
+      autoPlayInterval = setInterval(nextSlide, 4000);
+    }
   }
 
-  // Stop auto-play
   function stopAutoPlay() {
     if (autoPlayInterval) {
       clearInterval(autoPlayInterval);
@@ -1047,42 +1042,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Initialize carousel
   if (collageTrack) {
-    // Set initial position
     collageTrack.style.transform = 'translateX(0%)';
-
-    // Preload images
     preloadImages();
 
-    // Start auto-play after images load
     setTimeout(() => {
       startAutoPlay();
     }, 1500);
 
-    // Pause on visibility change
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        if (!autoPlayInterval) {
-          startAutoPlay();
-        }
-      } else {
-        stopAutoPlay();
-      }
+      document.visibilityState === 'visible' ? startAutoPlay() : stopAutoPlay();
     });
 
-    // Pause on page focus/blur
-    window.addEventListener('focus', () => {
-      if (!autoPlayInterval) {
-        startAutoPlay();
-      }
-    });
-
+    window.addEventListener('focus', startAutoPlay);
     window.addEventListener('blur', stopAutoPlay);
+    window.addEventListener('beforeunload', stopAutoPlay);
   }
-
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', stopAutoPlay);
-  // Call preload after initial setup
-  setTimeout(preloadNextImage, 1000);
 });
