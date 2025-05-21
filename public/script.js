@@ -629,31 +629,89 @@ function validateForm(formData) {
   const lastName = formData.get('lastName').trim();
   const phone = formData.get('phone').trim();
 
-  if (!firstName || !lastName || !phone) {
-    return {
-      valid: false,
-      message: 'יש למלא את כל שדות החובה',
-    };
+  clearValidationErrors(); // Clear existing errors
+
+  let isValid = true;
+
+  if (!firstName) {
+    addValidationError('firstName', 'נא למלא שם פרטי');
+    isValid = false;
   }
 
-  // Validate phone format if provided
-  if (phone && !isValidPhone(phone)) {
-    return {
-      valid: false,
-      message: 'אנא הזן מספר טלפון תקין',
-    };
+  if (!lastName) {
+    addValidationError('lastName', 'נא למלא שם משפחה');
+    isValid = false;
   }
 
-  return {
-    valid: true,
-  };
+  if (!phone) {
+    addValidationError('phone', 'נא למלא מספר טלפון');
+    isValid = false;
+  } else if (!isValidPhone(phone)) {
+    addValidationError('phone', 'מספר הטלפון אינו תקין');
+    isValid = false;
+  }
+
+  return { valid: isValid };
+}
+function addValidationError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'validation-error';
+  errorDiv.textContent = message;
+
+  field.classList.add('error');
+  field.setAttribute('aria-invalid', 'true');
+
+  // Insert error after the field
+  if (field.nextElementSibling && field.nextElementSibling.className === 'validation-error') {
+    field.nextElementSibling.textContent = message;
+  } else {
+    field.parentNode.insertBefore(errorDiv, field.nextElementSibling);
+  }
+
+  // Add field focus listener to clear error on input
+  field.addEventListener(
+    'input',
+    function onInput() {
+      clearFieldError(fieldId);
+      field.removeEventListener('input', onInput);
+    },
+    { once: true }
+  );
 }
 
+// Clear validation errors
+function clearValidationErrors() {
+  const errorFields = document.querySelectorAll('.error');
+  const errorMessages = document.querySelectorAll('.validation-error');
+
+  errorFields.forEach((field) => {
+    field.classList.remove('error');
+    field.setAttribute('aria-invalid', 'false');
+  });
+
+  errorMessages.forEach((msg) => msg.remove());
+}
+
+// Clear single field error
+function clearFieldError(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+
+  field.classList.remove('error');
+  field.setAttribute('aria-invalid', 'false');
+
+  const errorMsg = field.nextElementSibling;
+  if (errorMsg && errorMsg.className === 'validation-error') {
+    errorMsg.remove();
+  }
+}
 // Phone validation
 function isValidPhone(phone) {
-  // Simple Israeli phone validation
+  // Allow for various formats of Israeli phone numbers
+  const phoneClean = phone.replace(/[- ()]/g, '');
   const phoneRegex = /^0(5\d|[23489])\d{7}$/;
-  return phoneRegex.test(phone.replace(/[- ]/g, ''));
+  return phoneRegex.test(phoneClean);
 }
 
 // Event Listeners
