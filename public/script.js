@@ -921,3 +921,42 @@ function fixDescriptionText(text) {
       .replace(/\s?\|\s?/g, ' | ')
   );
 }
+// Add this function to your script.js file
+function adjustModalForMobile() {
+  const checkoutModal = document.getElementById('checkout-modal');
+  const thankYouModal = document.getElementById('thank-you-modal');
+
+  function adjustModal(modal) {
+    if (window.innerWidth <= 576) {
+      // Mobile view - position from bottom
+      modal.style.alignItems = 'flex-end';
+
+      // Adjust height based on content
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.style.maxHeight = '85vh';
+
+      // Add bottom safe area
+      const formActions = modal.querySelector('.form-actions');
+      if (formActions) {
+        formActions.style.paddingBottom = `calc(16px + ${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--safe-area-inset-bottom') || '0px'
+        })`;
+      }
+    } else {
+      // Desktop view - center modal
+      modal.style.alignItems = 'center';
+    }
+  }
+
+  if (checkoutModal) adjustModal(checkoutModal);
+  if (thankYouModal) adjustModal(thankYouModal);
+}
+
+// Call this on page load and window resize
+window.addEventListener('resize', adjustModalForMobile);
+document.addEventListener('DOMContentLoaded', () => {
+  // Add this line to your existing DOMContentLoaded event
+  adjustModalForMobile();
+});

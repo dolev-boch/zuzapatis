@@ -37,6 +37,8 @@ button:focus,
 
 .required {
   color: var(--error);
+  margin-right: 4px;
+  font-weight: bold;
 }
 
 /* === Loading Spinner === */
@@ -423,14 +425,15 @@ main {
   transform: translateX(-100%);
   width: 100%;
   max-width: 400px;
-  height: 100dvh; /* Use dvh for mobile browsers */
+  height: 100dvh;
   background-color: var(--white);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
   z-index: 1000;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .basket-sidebar.show {
@@ -448,18 +451,19 @@ main {
 }
 
 .close-basket {
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: var(--white);
   font-size: 1.2rem;
   cursor: pointer;
   transition: var(--transition);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  margin-right: -8px;
 }
 
 .basket-items {
@@ -494,13 +498,34 @@ main {
   height: 200px;
   color: var(--gray-600);
   font-size: 1.2rem;
+  padding: 32px 16px;
+  text-align: center;
+  width: 100%;
 }
 
 .empty-basket i {
-  font-size: 3rem;
-  color: var(--gray-500);
+  font-size: 3.5rem;
+  color: var(--gray-400);
+  margin-bottom: 8px;
+  opacity: 0.7;
 }
-
+.empty-basket p {
+  font-size: 1.2rem;
+  margin-bottom: 0;
+}
+.basket-header {
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  width: 100%;
+  flex-shrink: 0;
+}
 .basket-item {
   display: flex;
   justify-content: space-between;
@@ -599,7 +624,7 @@ main {
   background-color: var(--accent);
   color: var(--white);
   border: none;
-  padding: 14px;
+  padding: 16px;
   border-radius: var(--radius);
   font-weight: bold;
   width: 100%;
@@ -608,6 +633,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: auto;
+  min-height: 52px;
 }
 
 .checkout-button:hover:not(.disabled),
@@ -653,9 +680,12 @@ main {
   box-shadow: var(--shadow-lg);
   position: relative;
   z-index: 1110;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
   transform: translateY(20px);
   transition: transform 0.3s ease;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal.show .modal-content {
@@ -694,10 +724,17 @@ main {
   color: var(--accent);
   background-color: rgba(255, 255, 255, 0.1);
 }
-
+#checkout-form {
+  padding: 16px;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 .form-group {
   position: relative;
-  margin-bottom: 24px; /* Increased spacing for error messages */
+  margin-bottom: 24px;
+  width: 100%;
 }
 
 .form-group label {
@@ -706,16 +743,16 @@ main {
   font-weight: bold;
   color: var(--primary);
 }
-
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 12px;
+  padding: 14px 12px;
   border: 1px solid var(--gray-300);
   border-radius: var(--radius);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 16px;
   transition: var(--transition);
+  min-height: 50px;
 }
 
 .form-group input:focus,
@@ -763,8 +800,10 @@ main {
   bottom: 0;
   z-index: 5;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  margin-top: auto;
+  width: 100%;
+  border-top: 1px solid var(--gray-200);
 }
-
 .back-button {
   background-color: var(--gray-200);
   color: var(--gray-800);
@@ -991,20 +1030,34 @@ main {
     min-width: 44px;
     min-height: 44px;
   }
-  .form-actions {
-    flex-direction: column-reverse; /* Put submit button on top */
-    width: 100%;
-    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  .modal {
+    align-items: flex-end; /* Position modal from bottom on mobile */
   }
 
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 85vh;
+  }
+  .form-actions {
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0));
+    flex-direction: column-reverse;
+  }
   .back-button,
   .submit-button {
     width: 100%;
-    padding: 14px 20px;
-    min-height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
   }
 
   /* Larger touch targets for form inputs on mobile */
@@ -1148,6 +1201,10 @@ main {
   --radius: 8px;
   --radius-lg: 12px;
   --font-family: 'Segoe UI', Tahoma, 'Heebo', 'Assistant', Arial, sans-serif;
+  --safe-area-inset-top: env(safe-area-inset-top, 0);
+  --safe-area-inset-right: env(safe-area-inset-right, 0);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0);
+  --safe-area-inset-left: env(safe-area-inset-left, 0);
 }
 
 /* === General Styles === */
@@ -1185,6 +1242,11 @@ button {
   /* Improve touch target size for mobile */
   min-height: 44px;
   min-width: 44px;
+}
+.basket-summary,
+.form-actions,
+.modal-content {
+  padding-bottom: calc(16px + var(--safe-area-inset-bottom));
 }
 @media (max-width: 576px) {
   .quantity-selector {
