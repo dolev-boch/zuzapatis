@@ -233,6 +233,7 @@ function renderProducts() {
 }
 
 // Add event listeners to product buttons
+// Add event listeners to product buttons
 function addProductEventListeners() {
   const addToBasketWrappers = document.querySelectorAll('.add-to-basket-wrapper');
 
@@ -247,15 +248,29 @@ function addProductEventListeners() {
     button.addEventListener('click', () => {
       button.style.display = 'none';
       quantitySelector.classList.remove('hidden');
+      // Set initial focus for better UX
+      increaseBtn.focus();
     });
 
     increaseBtn.addEventListener('click', () => {
       input.value = parseInt(input.value) + 1;
+      // Update display immediately for visual feedback
+      input.style.fontWeight = 'bold';
+      setTimeout(() => {
+        input.style.fontWeight = 'normal';
+      }, 200);
     });
 
     decreaseBtn.addEventListener('click', () => {
       const val = parseInt(input.value);
-      if (val > 1) input.value = val - 1;
+      if (val > 1) {
+        input.value = val - 1;
+        // Update display immediately for visual feedback
+        input.style.fontWeight = 'bold';
+        setTimeout(() => {
+          input.style.fontWeight = 'normal';
+        }, 200);
+      }
     });
 
     confirmBtn.addEventListener('click', () => {
@@ -269,10 +284,58 @@ function addProductEventListeners() {
       quantitySelector.classList.add('hidden');
       button.style.display = 'inline-flex';
       input.value = 1;
+
+      // Show a brief toast notification for better feedback
+      showToastNotification(`נוסף ${quantity} יח' לסל`);
     });
+
+    // Add touch swipe support to close quantity selector
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    quantitySelector.addEventListener(
+      'touchstart',
+      (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      { passive: true }
+    );
+
+    quantitySelector.addEventListener(
+      'touchend',
+      (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (Math.abs(touchEndX - touchStartX) > 50) {
+          // Swipe gesture detected - cancel and reset
+          quantitySelector.classList.add('hidden');
+          button.style.display = 'inline-flex';
+          input.value = 1;
+        }
+      },
+      { passive: true }
+    );
   });
 }
+function showToastNotification(message) {
+  // Create toast element if it doesn't exist
+  let toast = document.getElementById('toast-notification');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-notification';
+    toast.className = 'toast-notification';
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+  }
 
+  // Set message and show toast
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  // Hide toast after 2 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2000);
+}
 // Add to Basket
 function addToBasket(productId, openSidebar = false) {
   const product = products.find((p) => p.id === productId);

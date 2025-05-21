@@ -190,6 +190,12 @@ main {
   display: flex;
   gap: 8px;
   align-items: center;
+  background-color: var(--white);
+  border-radius: var(--radius);
+  padding: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  z-index: 10;
 }
 
 .quantity-selector.hidden {
@@ -201,9 +207,67 @@ main {
   text-align: center;
   border: 1px solid var(--gray-300);
   border-radius: var(--radius);
-  padding: 6px;
+  padding: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.increase-qty,
+.decrease-qty {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--white);
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
 }
 
+.increase-qty:hover,
+.decrease-qty:hover {
+  background-color: var(--primary);
+}
+
+.confirm-add {
+  background-color: var(--accent);
+  color: var(--white);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-weight: bold;
+  transition: var(--transition);
+  min-width: 80px;
+  text-align: center;
+}
+
+.confirm-add:hover {
+  background-color: var(--primary);
+}
+
+/* Toast notification */
+.toast-notification {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 2000;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  text-align: center;
+  font-weight: bold;
+}
+
+.toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
 .confirm-add {
   background-color: var(--accent);
   color: var(--white);
@@ -924,7 +988,6 @@ main {
   }
 }
 
-
 /* === Print Styles === */
 @media print {
   header,
@@ -1053,4 +1116,31 @@ button {
   /* Improve touch target size for mobile */
   min-height: 44px;
   min-width: 44px;
+}
+@media (max-width: 576px) {
+  .quantity-selector {
+    position: relative;
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .increase-qty,
+  .decrease-qty {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+
+  .confirm-add {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  .quantity-input {
+    width: 60px;
+    font-size: 1.2rem;
+    padding: 10px;
+  }
 }
