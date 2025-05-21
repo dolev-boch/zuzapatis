@@ -1448,86 +1448,61 @@ button {
   border-color: transparent !important;
 }
 @media (max-width: 576px) {
-  /* Improved single-line layout for product footer */
+  /* Keep product footer on one line with proper spacing */
   .product-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    flex-wrap: nowrap;
+    gap: 10px;
   }
 
-  /* Adjust add-to-basket-wrapper to be more adaptive */
+  /* Ensure price has consistent size but doesn't overflow */
+  .product-price {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Preserve button styles exactly */
+  .add-to-basket,
+  .confirm-add {
+    /* No changes to existing button styles */
+    white-space: nowrap;
+  }
+
+  /* Make quantity selector more space-efficient */
+  .quantity-selector {
+    padding: 6px;
+    gap: 6px;
+    max-width: fit-content;
+    margin-left: auto; /* Push to right in RTL layout */
+  }
+
+  /* Keep controls usable but more compact */
+  .quantity-selector .increase-qty,
+  .quantity-selector .decrease-qty {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 0.9rem;
+  }
+
+  .quantity-selector .quantity-input {
+    width: 36px;
+    padding: 4px;
+    font-size: 0.9rem;
+  }
+
+  /* Ensure wrapper doesn't constrain button */
   .add-to-basket-wrapper {
-    flex: 1;
-    min-width: 0; /* Allow flex items to shrink below content size */
+    flex-shrink: 1;
     display: flex;
     justify-content: flex-end;
   }
 
-  /* Make price more compact but still visible */
-  .product-price {
-    font-size: 1rem;
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-left: 8px;
-  }
-
-  /* Transform quantity selector to be more compact */
-  .quantity-selector {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    max-width: 100%;
-    padding: 4px;
-    gap: 2px;
-    border-radius: var(--radius);
-    background-color: var(--gray-100);
-  }
-
-  /* Make buttons smaller but still touchable */
-  .quantity-selector .increase-qty,
-  .quantity-selector .decrease-qty {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-
-  /* Make input narrower */
-  .quantity-selector .quantity-input {
-    width: 32px;
-    padding: 4px;
-    font-size: 0.9rem;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  /* Optimize confirm button */
-  .quantity-selector .confirm-add {
-    padding: 4px 8px;
-    font-size: 0.9rem;
-    flex-shrink: 1;
-    min-width: 60px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Make add to basket button more compact */
-  .add-to-basket {
-    padding: 6px 10px;
-    font-size: 0.9rem;
-  }
-
-  /* For very small screens, adapt further */
-  @media (max-width: 350px) {
-    .quantity-selector .confirm-add {
-      min-width: 50px;
-      font-size: 0.85rem;
-    }
-
-    .product-price {
-      font-size: 0.95rem;
-    }
+  /* Create space with container padding adjustment */
+  .product-info {
+    padding: 16px 12px;
   }
 }
