@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta
+      name="description"
+      content="תפריט שבועות 2025 - זוזה פטיסרי. עוגות, מאפים ומוצרים מיוחדים לחג השבועות."
+    />
+    <title>זוזה פטיסרי - שבועות 2025</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- Add preconnect for performance -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="https://res.cloudinary.com/dcsbe4ad8/image/upload/v1747850679/favicon_zo6qsd.ico"
+      type="image/x-icon"
+    />
+    <!-- Web app manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <!-- iOS support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#1c2520" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container header-content">
+        <div class="logo">
+          <img
+            src="https://res.cloudinary.com/dcsbe4ad8/image/upload/v1747850679/logo_ut9uee.png"
+            alt="לוגו זוזה פטיסרי"
+            class="logo-image"
+            width="60"
+            height="60"
+            loading="eager"
+          />
+          <h1>
+            <span class="logo-text-primary">שבועות</span>
+            <span class="logo-text-accent">2025</span>
+          </h1>
+        </div>
+        <div
+          class="basket-icon"
+          id="basket-toggle"
+          role="button"
+          aria-label="פתח סל קניות"
+          tabindex="0"
+        >
+          <div class="basket-count" id="basket-count" aria-live="polite">0</div>
+          <i class="fas fa-shopping-basket"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+      <section class="products-section">
+        <h2 class="section-title">תפריט שבועות</h2>
+        <div id="products-container">
+          <!-- Products will be added dynamically via JavaScript -->
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>טוען...</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shopping Basket Sidebar -->
+    <aside class="basket-sidebar" id="basket-sidebar" aria-label="סל קניות">
+      <div class="basket-header">
+        <h3>סל קניות</h3>
+        <button class="close-basket" id="close-basket" aria-label="סגור סל קניות">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="basket-items" id="basket-items">
+        <!-- Basket items will be added dynamically -->
+        <div class="empty-basket" id="empty-basket" aria-live="polite">
+          <i class="fas fa-shopping-basket"></i>
+          <p>הסל שלך ריק</p>
+        </div>
+      </div>
+      <div class="basket-summary">
+        <div class="basket-total">
+          <span>סה״כ:</span>
+          <span id="basket-total-price" aria-live="polite">₪0.00</span>
+        </div>
+        <button class="checkout-button" id="checkout-button" disabled aria-label="המשך לתשלום">
+          לתשלום
+        </button>
+      </div>
+    </aside>
+
+    <!-- Checkout Modal -->
+    <div
+      class="modal"
+      id="checkout-modal"
+      role="dialog"
+      aria-labelledby="checkout-title"
+      aria-hidden="true"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="checkout-title">השלמת הזמנה</h3>
+          <button class="close-modal" id="close-modal" aria-label="סגור טופס הזמנה">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="checkout-form">
+          <div class="form-group">
+            <label for="firstName">שם פרטי <span class="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" required autocomplete="given-name" />
+          </div>
+          <div class="form-group">
+            <label for="lastName">שם משפחה <span class="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" required autocomplete="family-name" />
+          </div>
+          <div class="form-group">
+            <label for="email">אימייל</label>
+            <input type="email" id="email" name="email" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="phone">טלפון</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" dir="ltr" />
+          </div>
+          <div class="form-group">
+            <label for="address">כתובת</label>
+            <textarea id="address" name="address" autocomplete="street-address"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="notes">הערות להזמנה</label>
+            <textarea id="notes" name="notes"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="back-button" id="back-to-shopping">חזרה לקניות</button>
+            <button type="submit" class="submit-button">שלח הזמנה</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Thank You Message Modal -->
+    <div
+      class="modal"
+      id="thank-you-modal"
+      role="dialog"
+      aria-labelledby="thank-you-title"
+      aria-hidden="true"
+    >
+      <div class="modal-content thank-you-content">
+        <div class="thank-you-header">
+          <i class="fas fa-check-circle"></i>
+          <h3 id="thank-you-title">תודה על הזמנתך!</h3>
+        </div>
+        <p>קיבלנו את פרטי ההזמנה שלך.<br />ניצור איתך קשר בהקדם.</p>
+        <button class="close-thank-you" id="close-thank-you">סגור</button>
+      </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- WhatsApp Support Button -->
+    <a
+      href="https://wa.me/972523063700"
+      class="whatsapp-button"
+      aria-label="צור קשר בוואטסאפ"
+      target="_blank"
+      rel="noopener"
+    >
+      <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="script.js"></script>
+  </body>
+</html>
