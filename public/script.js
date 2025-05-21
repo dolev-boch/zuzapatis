@@ -473,10 +473,11 @@ function hideThankYouModal() {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
 }
-
 // Submit Order to Webhook
-function submitOrder(formData) {
-  // Prepare the data to be sent to make.com webhook
+async function submitOrder(formData) {
+  const webhookUrl = 'https://hook.eu2.make.com/sq44pfhp3uqrdmj7on6zp4osy0ci4duy';
+
+  // Prepare the data to be sent to the webhook
   const orderData = {
     customer: {
       firstName: formData.get('firstName'),
@@ -499,37 +500,32 @@ function submitOrder(formData) {
 
   console.log('Order data ready to send to webhook:', orderData);
 
-  // Send this data to make.com webhook - uncomment in production:
-  // const webhookUrl = 'your-make.com-webhook-url';
-  //
-  // fetch(webhookUrl, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify(orderData)
-  // })
-  // .then(response => {
-  //   if (!response.ok) {
-  //     throw new Error('Network response was not ok');
-  //   }
-  //   return response.json();
-  // })
-  // .then(data => {
-  //   console.log('Order successfully submitted:', data);
-  //   // Clear basket after successful order
-  //   clearBasket();
-  //   // Show thank you modal
-  //   hideCheckoutModal();
-  //   showThankYouModal();
-  // })
-  // .catch((error) => {
-  //   console.error('Error submitting order:', error);
-  //   alert('אירעה שגיאה בשליחת ההזמנה. אנא נסו שוב מאוחר יותר או צרו קשר טלפונית.');
-  // });
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
 
-  // For development - simulate success response
-  clearBasket();
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Order successfully submitted:', data);
+
+    // Clear basket after successful order
+    clearBasket();
+
+    // UI updates after successful submission
+    hideCheckoutModal();
+    showThankYouModal();
+  } catch (error) {
+    console.error('Error submitting order:', error);
+    alert('אירעה שגיאה בשליחת ההזמנה. אנא נסו שוב מאוחר יותר או צרו קשר טלפונית.');
+  }
 }
 
 // Clear basket
