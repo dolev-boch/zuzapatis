@@ -774,26 +774,41 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Form submit
+  // Form submit with improved validation handling
   checkoutForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     // Get form data
     const formData = new FormData(checkoutForm);
 
-    // Validate form
+    // Validate form with improved validation
     const validation = validateForm(formData);
 
     if (!validation.valid) {
-      alert(validation.message);
+      // Find the first error field and scroll to it
+      const firstErrorField = document.querySelector('.error');
+      if (firstErrorField) {
+        // Smooth scroll to error with offset
+        const headerHeight = document.querySelector('header').offsetHeight;
+        const offset = headerHeight + 20;
+
+        setTimeout(() => {
+          const fieldTop = firstErrorField.getBoundingClientRect().top;
+          const scrollPosition = fieldTop + window.pageYOffset - offset;
+          window.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth',
+          });
+
+          // Focus on the error field
+          firstErrorField.focus();
+        }, 100);
+      }
       return;
     }
 
     // Submit order
     submitOrder(formData);
-
-    // Hide checkout modal and show thank you modal
-    hideCheckoutModal();
-    showThankYouModal();
   });
 
   // Keyboard navigation for accessibility
