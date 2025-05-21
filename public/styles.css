@@ -1363,3 +1363,44 @@ button {
     }
   }
 }
+/* Add this to your CSS file */
+.basket-sidebar .close-basket,
+.basket-sidebar.show .close-basket,
+#close-basket,
+.close-basket[aria-label='סגור סל קניות'] {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: var(--white) !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.basket-sidebar .close-basket:hover,
+.basket-sidebar.show .close-basket:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  color: var(--accent) !important;
+}
+
+.basket-sidebar .close-basket:active,
+.basket-sidebar.show .close-basket:active {
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .basket-sidebar .close-basket,
+  #close-basket {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: var(--white) !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Remove any auto-applied active states that might be causing the issue */
+.close-basket:focus,
+.close-basket.active,
+.close-basket[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.2) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
