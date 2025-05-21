@@ -993,7 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const slides = document.getElementsByClassName('mySlides');
 
     for (let i = 0; i < slides.length; i++) {
-      slides[i].style.display = 'none';
+      slides[i].classList.remove('show');
     }
 
     slideIndex++;
@@ -1001,7 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
       slideIndex = 1;
     }
 
-    slides[slideIndex - 1].style.display = 'block';
-    setTimeout(showSlides, 4000); // Change image every 4 seconds
+    slides[slideIndex - 1].classList.add('show');
+    setTimeout(showSlides, 4000);
   }
 });
