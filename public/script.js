@@ -442,24 +442,25 @@ function updateBasket() {
     basketItem.className = 'basket-item';
     basketItem.setAttribute('data-product-id', item.id);
 
+    // Inside updateBasket function, replace the basketItem.innerHTML = `...` part with this:
     basketItem.innerHTML = `
-      <div class="basket-item-info">
-        <div class="basket-item-title">${item.title}</div>
-        <div class="basket-item-price">${formatPrice(item.price * item.quantity)}</div>
-      </div>
-      <div class="basket-item-actions">
-        <button class="quantity-btn decrease-btn" data-id="${item.id}" aria-label="הפחת כמות ${
+  <div class="basket-item-info">
+    <div class="basket-item-title">${item.title}</div>
+    <div class="basket-item-price">${formatPrice(item.price * item.quantity)}</div>
+  </div>
+  <div class="basket-item-actions">
+    <button class="quantity-btn decrease-btn" data-id="${item.id}" aria-label="הפחת כמות ${
       item.title
     }">-</button>
-        <span class="item-quantity" aria-live="polite">${item.quantity}</span>
-        <button class="quantity-btn increase-btn" data-id="${item.id}" aria-label="הגדל כמות ${
+    <span class="item-quantity" aria-live="polite">${item.quantity}</span>
+    <button class="quantity-btn increase-btn" data-id="${item.id}" aria-label="הגדל כמות ${
       item.title
     }">+</button>
-        <button class="remove-item" data-id="${item.id}" aria-label="הסר ${item.title} מהסל">
-          <i class="fas fa-trash-alt" aria-hidden="true"></i>
-        </button>
-      </div>
-    `;
+    <button class="remove-item" data-id="${item.id}" aria-label="הסר ${item.title} מהסל">
+      <i class="fas fa-trash-alt" aria-hidden="true"></i>
+    </button>
+  </div>
+`;
 
     basketItems.appendChild(basketItem);
   });

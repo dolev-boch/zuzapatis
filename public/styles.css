@@ -528,47 +528,58 @@ main {
 }
 .basket-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 16px 0;
   border-bottom: 1px solid var(--gray-200);
+  position: relative;
 }
 
 .basket-item-info {
   flex-grow: 1;
-  padding-left: 16px;
+  padding: 0 0 12px 0;
+  width: 100%;
 }
 
 .basket-item-title {
   font-weight: bold;
   margin-bottom: 4px;
   color: var(--gray-800);
+  padding-right: 8px;
+  font-size: 1.1rem;
 }
 
 .basket-item-price {
   color: var(--accent);
   font-weight: bold;
+  font-size: 1.1rem;
+  position: absolute;
+  top: 16px;
+  left: 0;
 }
 
 .basket-item-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 4px;
+  width: 70%;
 }
 
 .item-quantity {
-  width: 30px;
+  width: 36px;
   text-align: center;
   font-weight: bold;
+  font-size: 1rem;
 }
 
 .quantity-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: var(--gray-200);
-  color: var(--gray-800);
+  background-color: var(--accent);
+  color: var(--white);
   font-size: 1rem;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -578,7 +589,6 @@ main {
 .quantity-btn:hover,
 .quantity-btn:focus {
   background-color: var(--primary);
-  color: var(--white);
 }
 
 .remove-item {
@@ -586,12 +596,13 @@ main {
   cursor: pointer;
   font-size: 1.2rem;
   transition: var(--transition);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  margin-left: auto;
 }
 
 .remove-item:hover,
@@ -599,7 +610,6 @@ main {
   color: var(--error);
   background-color: var(--gray-200);
 }
-
 .basket-summary {
   background-color: var(--gray-100);
   padding: 16px;
@@ -1021,6 +1031,39 @@ main {
 
   .basket-summary {
     padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); /* Add safe area for iPhone X and newer */
+  }
+  .basket-item {
+    padding: 20px 0;
+  }
+
+  .basket-item-title {
+    padding-right: 0;
+    margin-bottom: 8px;
+    padding-left: 90px; /* Make room for price */
+  }
+
+  .basket-item-price {
+    top: 20px;
+  }
+
+  .basket-item-actions {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .quantity-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .item-quantity {
+    width: 44px;
+    font-size: 1.1rem;
+  }
+
+  .remove-item {
+    width: 44px;
+    height: 44px;
   }
   /* Fix tap targets for mobile */
   .quantity-btn,
