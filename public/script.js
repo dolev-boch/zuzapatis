@@ -190,11 +190,18 @@ function renderProducts() {
 <p class="product-description">${fixDescriptionText(product.description)}</p>
       <div class="product-footer">
         <span class="product-price">${formatPrice(product.price)}</span>
-        <button class="add-to-basket" data-id="${product.id}" aria-label="הוסף ${
-        product.title
-      } לסל">
-          <i class="fas fa-plus" aria-hidden="true"></i> הוסף לסל
-        </button>
+<div class="add-to-basket-wrapper" data-id="${product.id}">
+  <button class="add-to-basket" data-id="${product.id}">
+    <i class="fas fa-plus" aria-hidden="true"></i> הוסף לסל
+  </button>
+  <div class="quantity-selector hidden">
+    <button class="decrease-qty" aria-label="הפחת כמות">-</button>
+    <input type="number" value="1" min="1" class="quantity-input" />
+    <button class="increase-qty" aria-label="הגדל כמות">+</button>
+    <button class="confirm-add" aria-label="אישור הוספה">אישור</button>
+  </div>
+</div>
+
       </div>
     </div>
   `;
@@ -227,46 +234,67 @@ function renderProducts() {
 
 // Add event listeners to product buttons
 function addProductEventListeners() {
-  const addToBasketBtns = document.querySelectorAll('.add-to-basket');
+  const addToBasketWrappers = document.querySelectorAll('.add-to-basket-wrapper');
 
-  addToBasketBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const productId = parseInt(btn.getAttribute('data-id'));
-      addToBasket(productId);
+  addToBasketWrappers.forEach((wrapper) => {
+    const button = wrapper.querySelector('.add-to-basket');
+    const quantitySelector = wrapper.querySelector('.quantity-selector');
+    const input = wrapper.querySelector('.quantity-input');
+    const confirmBtn = wrapper.querySelector('.confirm-add');
+    const increaseBtn = wrapper.querySelector('.increase-qty');
+    const decreaseBtn = wrapper.querySelector('.decrease-qty');
+
+    button.addEventListener('click', () => {
+      button.style.display = 'none';
+      quantitySelector.classList.remove('hidden');
+    });
+
+    increaseBtn.addEventListener('click', () => {
+      input.value = parseInt(input.value) + 1;
+    });
+
+    decreaseBtn.addEventListener('click', () => {
+      const val = parseInt(input.value);
+      if (val > 1) input.value = val - 1;
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      const quantity = parseInt(input.value);
+      const id = parseInt(button.getAttribute('data-id'));
+
+      for (let i = 0; i < quantity; i++) {
+        addToBasket(id, false); // false means don't show sidebar
+      }
+
+      quantitySelector.classList.add('hidden');
+      button.style.display = 'inline-flex';
+      input.value = 1;
     });
   });
 }
 
 // Add to Basket
-function addToBasket(productId) {
+function addToBasket(productId, openSidebar = false) {
   const product = products.find((p) => p.id === productId);
-
   if (!product) return;
 
   const itemInBasket = basket.find((item) => item.id === productId);
-
   if (itemInBasket) {
     itemInBasket.quantity++;
   } else {
-    basket.push({
-      ...product,
-      quantity: 1,
-    });
+    basket.push({ ...product, quantity: 1 });
   }
 
-  // Save to localStorage
   localStorage.setItem('shavuotBasket', JSON.stringify(basket));
-
   updateBasket();
-  showBasketSidebar();
 
-  // Add animation to basket icon
+  if (openSidebar) showBasketSidebar();
+
   basketToggle.classList.add('pulse');
   setTimeout(() => {
     basketToggle.classList.remove('pulse');
   }, 700);
 
-  // Announce to screen readers
   announceToScreenReader(`נוסף לסל: ${product.title}`);
 }
 

@@ -180,6 +180,42 @@ main {
   margin-bottom: 24px;
   color: var(--gray-700);
 }
+.add-to-basket-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quantity-selector {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.quantity-selector.hidden {
+  display: none;
+}
+
+.quantity-input {
+  width: 50px;
+  text-align: center;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  padding: 6px;
+}
+
+.confirm-add {
+  background-color: var(--accent);
+  color: var(--white);
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-weight: bold;
+  transition: var(--transition);
+}
+
+.confirm-add:hover {
+  background-color: var(--primary);
+}
 
 /* === Category Styles === */
 .product-card.recommended {
@@ -729,7 +765,7 @@ main {
 /* WhatsApp Button */
 .whatsapp-button {
   position: fixed;
-  bottom: 20px;
+  bottom: 90px; /* instead of 20px */
   left: 20px;
   background-color: #25d366;
   color: white;
