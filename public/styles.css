@@ -1448,61 +1448,82 @@ button {
   border-color: transparent !important;
 }
 @media (max-width: 576px) {
-  /* Keep product footer on one line with proper spacing */
+  /* Maintain product footer on one line with proper spacing */
   .product-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap;
-    gap: 10px;
+    width: 100%;
   }
 
-  /* Ensure price has consistent size but doesn't overflow */
+  /* Ensure price has enough room */
   .product-price {
-    font-size: 1.1rem;
+    margin-right: 8px; /* Add space after price in RTL */
     white-space: nowrap;
     flex-shrink: 0;
   }
 
-  /* Preserve button styles exactly */
-  .add-to-basket,
-  .confirm-add {
-    /* No changes to existing button styles */
-    white-space: nowrap;
+  /* Make the quantity selector appear below when active */
+  .add-to-basket-wrapper {
+    position: relative;
   }
 
-  /* Make quantity selector more space-efficient */
+  /* Keep add-to-basket button unchanged */
+  .add-to-basket {
+    /* No changes to existing styles */
+  }
+
+  /* Position quantity selector below instead of inline */
   .quantity-selector {
-    padding: 6px;
-    gap: 6px;
-    max-width: fit-content;
-    margin-left: auto; /* Push to right in RTL layout */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    width: auto;
+    min-width: 210px; /* Ensure proper width for controls */
+    padding: 10px;
+    border-radius: var(--radius);
+    background-color: var(--white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
 
-  /* Keep controls usable but more compact */
+  /* Ensure quantity controls are properly sized */
   .quantity-selector .increase-qty,
   .quantity-selector .decrease-qty {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    font-size: 0.9rem;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 1.1rem;
   }
 
   .quantity-selector .quantity-input {
-    width: 36px;
-    padding: 4px;
-    font-size: 0.9rem;
+    width: 50px;
+    min-width: 50px;
+    padding: 8px;
+    font-size: 1rem;
   }
 
-  /* Ensure wrapper doesn't constrain button */
-  .add-to-basket-wrapper {
-    flex-shrink: 1;
-    display: flex;
-    justify-content: flex-end;
+  /* Keep confirm button at proper size */
+  .quantity-selector .confirm-add {
+    padding: 8px 16px;
+    font-size: 1rem;
+    min-width: 80px;
   }
 
-  /* Create space with container padding adjustment */
-  .product-info {
-    padding: 16px 12px;
+  /* Add overlay to prevent interactions beneath */
+  .quantity-selector:not(.hidden)::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
   }
 }
