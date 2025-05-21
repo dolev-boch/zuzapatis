@@ -1612,7 +1612,6 @@ button {
   }
 }
 /* === Hero Collage Carousel === */
-/* === Hero Collage Carousel === */
 .hero-collage {
   width: 100%;
   background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
@@ -1628,19 +1627,18 @@ button {
   height: 300px;
   overflow: hidden;
   border-radius: 0;
-  background-color: var(--gray-50);
 }
 
 .collage-track {
   display: flex;
-  width: 700%; /* 7 slides × 100% */
+  width: 300%; /* 3 slides × 100% */
   height: 100%;
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
   will-change: transform;
 }
 
 .collage-slide {
-  width: 14.285714%; /* 100% ÷ 7 slides */
+  width: 33.333333%; /* 100% ÷ 3 slides */
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -1653,54 +1651,7 @@ button {
   object-fit: cover;
   object-position: center;
   display: block;
-  transition: transform 0.3s ease;
-}
-
-.collage-slide:hover img {
-  transform: scale(1.02);
-}
-
-/* Indicators Only - No Navigation Arrows */
-.collage-indicators {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 3;
-  padding: 8px 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-
-.indicator.active {
-  background: var(--accent);
-  transform: scale(1.4);
-  box-shadow: 0 0 8px rgba(184, 153, 89, 0.6);
-}
-
-.indicator:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.8);
-  transform: scale(1.2);
-}
-
-/* Hide navigation controls - auto-play only */
-.collage-controls {
-  display: none;
+  transition: opacity 0.5s ease;
 }
 
 /* Responsive Design */
@@ -1708,50 +1659,17 @@ button {
   .collage-container {
     height: 250px;
   }
-
-  .collage-indicators {
-    bottom: 12px;
-    gap: 6px;
-    padding: 6px 12px;
-  }
-
-  .indicator {
-    width: 6px;
-    height: 6px;
-  }
 }
 
 @media (max-width: 576px) {
   .collage-container {
     height: 200px;
   }
-
-  .collage-indicators {
-    bottom: 10px;
-    gap: 5px;
-    padding: 5px 10px;
-  }
-
-  .indicator {
-    width: 5px;
-    height: 5px;
-  }
 }
 
 @media (max-width: 480px) {
   .collage-container {
     height: 180px;
-  }
-
-  .collage-indicators {
-    bottom: 8px;
-    gap: 4px;
-    padding: 4px 8px;
-  }
-
-  .indicator {
-    width: 4px;
-    height: 4px;
   }
 }
 
@@ -1760,14 +1678,6 @@ button {
   .collage-track {
     transition: none;
   }
-
-  .collage-slide img {
-    transition: none;
-  }
-
-  .collage-slide:hover img {
-    transform: none;
-  }
 }
 
 /* Print styles */
@@ -1775,10 +1685,6 @@ button {
   .hero-collage {
     height: 150px;
     background: white;
-  }
-
-  .collage-indicators {
-    display: none;
   }
 
   .collage-track {
