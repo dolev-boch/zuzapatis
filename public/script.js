@@ -134,6 +134,8 @@ const checkoutForm = document.getElementById('checkout-form');
 const thankYouModal = document.getElementById('thank-you-modal');
 const closeThankYou = document.getElementById('close-thank-you');
 const backToShoppingBtn = document.getElementById('back-to-shopping');
+const floatingBasketBtn = document.getElementById('floating-basket-button');
+const floatingBasketCountEl = document.getElementById('floating-basket-count');
 
 // Basket State - Using localStorage to persist basket between sessions
 let basket = JSON.parse(localStorage.getItem('shavuotBasket')) || [];
@@ -337,6 +339,7 @@ function showToastNotification(message) {
   }, 2000);
 }
 // Add to Basket
+// Add to Basket
 function addToBasket(productId, openSidebar = false) {
   const product = products.find((p) => p.id === productId);
   if (!product) return;
@@ -353,9 +356,14 @@ function addToBasket(productId, openSidebar = false) {
 
   if (openSidebar) showBasketSidebar();
 
+  // Add pulse animation to both basket icons
   basketToggle.classList.add('pulse');
+  if (floatingBasketBtn) floatingBasketBtn.classList.add('pulse');
+
+  // Remove pulse animation after delay
   setTimeout(() => {
     basketToggle.classList.remove('pulse');
+    if (floatingBasketBtn) floatingBasketBtn.classList.remove('pulse');
   }, 700);
 
   announceToScreenReader(`נוסף לסל: ${product.title}`);
@@ -408,10 +416,14 @@ function announceToScreenReader(message) {
 }
 
 // Update Basket UI
+// Update Basket UI
 function updateBasket() {
   // Update basket count
   const totalItems = basket.reduce((total, item) => total + item.quantity, 0);
   basketCountEl.textContent = totalItems;
+
+  // Update floating basket count too if it exists
+  if (floatingBasketCountEl) floatingBasketCountEl.textContent = totalItems;
 
   // Toggle empty basket message
   if (basket.length === 0) {
@@ -509,10 +521,14 @@ function addBasketItemEventListeners() {
 }
 
 // Show Basket Sidebar
+// Show Basket Sidebar
 function showBasketSidebar() {
   basketSidebar.classList.add('show');
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
+
+  // Hide floating basket when sidebar is open
+  if (floatingBasketBtn) floatingBasketBtn.classList.add('hidden');
 
   // Focus trap for accessibility
   setTimeout(() => {
@@ -525,6 +541,9 @@ function hideBasketSidebar() {
   basketSidebar.classList.remove('show');
   overlay.classList.remove('show');
   document.body.style.overflow = '';
+
+  // Show floating basket when sidebar is closed
+  if (floatingBasketBtn) floatingBasketBtn.classList.remove('hidden');
 }
 
 // Show Checkout Modal
@@ -721,7 +740,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize basket
   updateBasket();
-
+  if (floatingBasketBtn) {
+    floatingBasketBtn.addEventListener('click', showBasketSidebar);
+    floatingBasketBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        showBasketSidebar();
+      }
+    });
+  }
   // Basket toggle
   basketToggle.addEventListener('click', showBasketSidebar);
   basketToggle.addEventListener('keydown', (e) => {
