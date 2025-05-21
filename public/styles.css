@@ -1611,3 +1611,232 @@ button {
     border-radius: var(--radius);
   }
 }
+/* === Hero Collage Carousel === */
+.hero-collage {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.collage-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 0;
+  background-color: var(--gray-50);
+}
+
+.collage-track {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.collage-slide {
+  width: 33.333%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.collage-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.collage-slide:hover img {
+  transform: scale(1.05);
+}
+
+/* Navigation Controls */
+.collage-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.collage-nav {
+  background: rgba(28, 37, 32, 0.8);
+  color: var(--white);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.collage-nav:hover,
+.collage-nav:focus {
+  background: rgba(184, 153, 89, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+}
+
+.collage-nav:active {
+  transform: scale(0.95);
+}
+
+/* Indicators */
+.collage-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.indicator.active,
+.indicator:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .collage-container {
+    height: 250px;
+  }
+
+  .collage-controls {
+    padding: 0 15px;
+  }
+
+  .collage-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .collage-indicators {
+    bottom: 15px;
+    gap: 8px;
+  }
+
+  .indicator {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .collage-container {
+    height: 200px;
+  }
+
+  .collage-controls {
+    padding: 0 10px;
+  }
+
+  .collage-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .collage-indicators {
+    bottom: 12px;
+    gap: 6px;
+  }
+
+  .indicator {
+    width: 8px;
+    height: 8px;
+    border-width: 1px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .collage-slide img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .collage-track {
+    transition: none;
+  }
+
+  .collage-slide img {
+    transition: none;
+  }
+
+  .collage-slide:hover img {
+    transform: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .hero-collage {
+    background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+  }
+
+  .collage-container {
+    background-color: var(--gray-800);
+  }
+}
+
+/* Print styles */
+@media print {
+  .hero-collage {
+    height: 150px;
+    background: white;
+  }
+
+  .collage-controls,
+  .collage-indicators {
+    display: none;
+  }
+
+  .collage-track {
+    transform: translateX(0) !important;
+  }
+
+  .collage-slide:not(:first-child) {
+    display: none;
+  }
+}
