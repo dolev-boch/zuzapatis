@@ -988,26 +988,55 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this line to your existing DOMContentLoaded event
   adjustModalForMobile();
   // === Collage Carousel Functionality ===
+  // === Collage Carousel Functionality ===
   const collageTrack = document.getElementById('collage-track');
-  const totalSlides = 3;
+  const totalSlides = 6;
   let currentSlide = 0;
   let autoPlayInterval;
+  let isTransitioning = false;
+
+  // Preload all images
+  function preloadImages() {
+    const images = collageTrack.querySelectorAll('img');
+    let loadedCount = 0;
+
+    images.forEach((img) => {
+      if (img.complete) {
+        loadedCount++;
+      } else {
+        img.addEventListener('load', () => {
+          loadedCount++;
+          if (loadedCount === images.length) {
+            console.log('All carousel images loaded');
+          }
+        });
+      }
+    });
+  }
 
   // Auto-advance slides function
   function nextSlide() {
-    if (!collageTrack) return;
+    if (!collageTrack || isTransitioning) return;
 
+    isTransitioning = true;
     currentSlide = (currentSlide + 1) % totalSlides;
-    const translateX = -(currentSlide * 33.333333); // Each slide is 33.333333% wide
+
+    // Calculate exact transform percentage for 6 slides
+    const translateX = -(currentSlide * 16.666667);
 
     collageTrack.style.transform = `translateX(${translateX}%)`;
+
+    // Reset transition flag after animation completes
+    setTimeout(() => {
+      isTransitioning = false;
+    }, 1200);
   }
 
   // Start auto-play
   function startAutoPlay() {
-    if (autoPlayInterval) return; // Prevent multiple intervals
+    if (autoPlayInterval) return;
 
-    autoPlayInterval = setInterval(nextSlide, 4000); // Change every 4 seconds
+    autoPlayInterval = setInterval(nextSlide, 4000); // 4 seconds
   }
 
   // Stop auto-play
@@ -1018,27 +1047,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Initialize carousel if element exists
+  // Initialize carousel
   if (collageTrack) {
     // Set initial position
     collageTrack.style.transform = 'translateX(0%)';
 
-    // Start auto-play after 1 second
-    setTimeout(startAutoPlay, 1000);
+    // Preload images
+    preloadImages();
+
+    // Start auto-play after images load
+    setTimeout(() => {
+      startAutoPlay();
+    }, 1500);
 
     // Pause on visibility change
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        startAutoPlay();
+        if (!autoPlayInterval) {
+          startAutoPlay();
+        }
       } else {
         stopAutoPlay();
       }
     });
+
+    // Pause on page focus/blur
+    window.addEventListener('focus', () => {
+      if (!autoPlayInterval) {
+        startAutoPlay();
+      }
+    });
+
+    window.addEventListener('blur', stopAutoPlay);
   }
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', stopAutoPlay);
-
   // Call preload after initial setup
   setTimeout(preloadNextImage, 1000);
 });
