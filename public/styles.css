@@ -1447,69 +1447,87 @@ button {
   box-shadow: none !important;
   border-color: transparent !important;
 }
-/* Add this to your existing CSS file */
 /* Add this to your styles.css */
 @media (max-width: 768px) {
   .product-footer {
-    flex-wrap: wrap;
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
   }
 
   .product-price {
     font-size: 1.1rem;
     white-space: nowrap;
-    padding-left: 8px;
-    flex: 0 0 auto;
+    flex-shrink: 0;
   }
 
   .add-to-basket-wrapper {
-    flex: 1;
-    min-width: 0;
-    max-width: 200px;
-    margin-right: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .add-to-basket {
+    /* Preserve desktop button width */
+    min-width: 110px;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 
   .quantity-selector {
-    padding: 8px;
-    gap: 4px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--radius);
+    background-color: var(--white);
+  }
+
+  .quantity-selector.hidden {
+    display: none;
   }
 
   .quantity-input {
-    width: 40px;
-    font-size: 1rem;
-    padding: 4px;
-  }
-
-  .increase-qty,
-  .decrease-qty {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
+    width: 45px;
+    text-align: center;
+    padding: 6px 4px;
   }
 
   .confirm-add {
-    font-size: 0.85rem;
-    padding: 6px 10px;
-    min-width: 60px;
+    /* Preserve desktop confirm button width */
+    min-width: 80px;
+    white-space: nowrap;
+    margin-right: 4px;
   }
 }
 
-/* Specific adjustments for very small screens */
-@media (max-width: 375px) {
-  .quantity-input {
-    width: 36px;
+/* Additional adjustments for very small screens */
+@media (max-width: 420px) {
+  .product-footer {
+    flex-wrap: wrap;
+    row-gap: 12px;
   }
 
-  .increase-qty,
-  .decrease-qty {
-    width: 30px;
-    height: 30px;
+  .product-price {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    width: 100%;
+    text-align: right;
   }
 
-  .confirm-add {
-    min-width: 55px;
-    font-size: 0.8rem;
+  .add-to-basket-wrapper {
+    width: 100%;
+  }
+
+  .add-to-basket {
+    width: 100%;
+  }
+
+  .quantity-selector {
+    width: 100%;
+    justify-content: space-between;
   }
 }
