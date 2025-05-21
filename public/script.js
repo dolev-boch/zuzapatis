@@ -741,6 +741,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize basket
   updateBasket();
+  setTimeout(initSlideshow, 100);
+
   if (floatingBasketBtn) {
     floatingBasketBtn.addEventListener('click', showBasketSidebar);
     floatingBasketBtn.addEventListener('keydown', (e) => {
@@ -984,42 +986,33 @@ function adjustModalForMobile() {
 
 // Call this on page load and window resize
 window.addEventListener('resize', adjustModalForMobile);
-document.addEventListener('DOMContentLoaded', () => {
-  // === Simple Slideshow Logic ===
-  // === Optimized Slideshow Logic ===
-  let slideIndex = 0;
-  let slideshowInterval;
+// === Slideshow Logic ===
+let slideIndex = 0;
+let slideshowInterval;
 
-  function initSlideshow() {
-    const slides = document.getElementsByClassName('mySlides');
+function initSlideshow() {
+  const slides = document.getElementsByClassName('mySlides');
 
-    if (slides.length === 0) return;
+  if (slides.length === 0) return;
 
-    // Show first slide immediately
-    slides[0].classList.add('show');
+  // Show first slide immediately
+  slides[0].classList.add('show');
 
-    // Start automatic slideshow
-    slideshowInterval = setInterval(nextSlide, 4000);
-  }
+  // Start automatic slideshow
+  slideshowInterval = setInterval(nextSlide, 4000);
+}
 
-  function nextSlide() {
-    const slides = document.getElementsByClassName('mySlides');
+function nextSlide() {
+  const slides = document.getElementsByClassName('mySlides');
 
-    if (slides.length === 0) return;
+  if (slides.length === 0) return;
 
-    // Remove show class from current slide
-    slides[slideIndex].classList.remove('show');
+  // Remove show class from current slide
+  slides[slideIndex].classList.remove('show');
 
-    // Move to next slide
-    slideIndex = (slideIndex + 1) % slides.length;
+  // Move to next slide
+  slideIndex = (slideIndex + 1) % slides.length;
 
-    // Show next slide
-    slides[slideIndex].classList.add('show');
-  }
-
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure images are loaded
-    setTimeout(initSlideshow, 100);
-  });
-});
+  // Show next slide
+  slides[slideIndex].classList.add('show');
+}
