@@ -549,7 +549,7 @@ main {
 }
 
 .basket-item-price {
-  color: var(--accent);
+  color: var(--gray-800); /* or var(--primary) depending on your previous color */
   font-weight: bold;
   font-size: 1.1rem;
   position: absolute;
@@ -1446,4 +1446,46 @@ button {
   outline: none !important;
   box-shadow: none !important;
   border-color: transparent !important;
+}
+@media (max-width: 576px) {
+  .basket-item-price {
+    top: 20px;
+    right: auto; /* Remove any right positioning */
+    left: 8px; /* Position from the left side with some padding */
+  }
+
+  .basket-item-actions {
+    width: 85%; /* Reduce width to create more space on the right */
+    margin-top: 8px;
+    justify-content: flex-start; /* Align items to the start */
+    gap: 12px; /* Increase gap between elements */
+  }
+
+  /* Ensure the quantity area is properly spaced */
+  .item-quantity {
+    min-width: 44px; /* Ensure consistent width */
+    text-align: center;
+  }
+
+  /* Handle quantity selector in product cards */
+  .quantity-selector {
+    width: 100%;
+    max-width: 220px; /* Limit maximum width */
+    justify-content: space-between;
+  }
+
+  /* Move price further from quantity controls in basket */
+  .product-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .product-footer .product-price {
+    margin-bottom: 4px;
+  }
+
+  .add-to-basket-wrapper {
+    width: 100%;
+  }
 }
