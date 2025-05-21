@@ -988,13 +988,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this line to your existing DOMContentLoaded event
   adjustModalForMobile();
   // === Collage Carousel Functionality ===
+  // === Collage Carousel Functionality ===
   const collageTrack = document.getElementById('collage-track');
-  const collageNext = document.getElementById('collage-next');
-  const collagePrev = document.getElementById('collage-prev');
   const collageIndicators = document.getElementById('collage-indicators');
 
   let currentSlide = 0;
-  const totalSlides = 3;
+  const totalSlides = 7;
   let autoPlayInterval;
   let isTransitioning = false;
 
@@ -1004,77 +1003,66 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isTransitioning) {
         nextSlide();
       }
-    }, 4000); // Change slide every 4 seconds
+    }, 3500); // Change slide every 3.5 seconds
   }
 
   function stopAutoPlay() {
-    clearInterval(autoPlayInterval);
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = null;
+    }
   }
 
-  function updateSlide(slideIndex, userInitiated = false) {
-    if (isTransitioning) return;
+  function updateSlide(slideIndex) {
+    if (isTransitioning || !collageTrack) return;
 
     isTransitioning = true;
-    currentSlide = slideIndex;
 
-    // Update track position
-    const translateX = -(currentSlide * 33.333);
-    collageTrack.style.transform = `translateX(${translateX}%)`;
+    // Ensure slideIndex is within bounds
+    currentSlide = Math.max(0, Math.min(slideIndex, totalSlides - 1));
+
+    // Calculate the exact transform percentage
+    const translatePercentage = -(currentSlide * 14.285714); // 100/7 = 14.285714
+
+    // Apply transform
+    collageTrack.style.transform = `translateX(${translatePercentage}%)`;
 
     // Update indicators
-    document.querySelectorAll('.indicator').forEach((indicator, index) => {
-      indicator.classList.toggle('active', index === currentSlide);
-    });
+    updateIndicators();
 
-    // Update navigation button states
-    updateNavigationState();
-
-    // Reset auto-play if user initiated
-    if (userInitiated) {
-      stopAutoPlay();
-      setTimeout(startAutoPlay, 6000); // Restart after 6 seconds
-    }
-
-    // Reset transition flag
+    // Reset transition flag after animation completes
     setTimeout(() => {
       isTransitioning = false;
-    }, 600);
+    }, 800);
+  }
+
+  function updateIndicators() {
+    if (!collageIndicators) return;
+
+    const indicators = collageIndicators.querySelectorAll('.indicator');
+    indicators.forEach((indicator, index) => {
+      if (index === currentSlide) {
+        indicator.classList.add('active');
+        indicator.setAttribute('aria-selected', 'true');
+      } else {
+        indicator.classList.remove('active');
+        indicator.setAttribute('aria-selected', 'false');
+      }
+    });
   }
 
   function nextSlide() {
-    const next = (currentSlide + 1) % totalSlides;
-    updateSlide(next);
+    const nextIndex = (currentSlide + 1) % totalSlides;
+    updateSlide(nextIndex);
   }
 
-  function prevSlide() {
-    const prev = (currentSlide - 1 + totalSlides) % totalSlides;
-    updateSlide(prev);
-  }
-
-  function updateNavigationState() {
-    // Update ARIA attributes for accessibility
-    collageNext.setAttribute('aria-disabled', 'false');
-    collagePrev.setAttribute('aria-disabled', 'false');
-
-    // Update indicator ARIA states
-    document.querySelectorAll('.indicator').forEach((indicator, index) => {
-      indicator.setAttribute('aria-selected', index === currentSlide ? 'true' : 'false');
-    });
-  }
-
-  // Event listeners for navigation
-  if (collageNext) {
-    collageNext.addEventListener('click', () => {
-      nextSlide();
-      updateSlide(currentSlide, true);
-    });
-  }
-
-  if (collagePrev) {
-    collagePrev.addEventListener('click', () => {
-      prevSlide();
-      updateSlide(currentSlide, true);
-    });
+  function goToSlide(slideIndex) {
+    if (slideIndex >= 0 && slideIndex < totalSlides) {
+      updateSlide(slideIndex);
+      // Restart auto-play after manual interaction
+      stopAutoPlay();
+      setTimeout(startAutoPlay, 5000);
+    }
   }
 
   // Event listeners for indicators
@@ -1082,49 +1070,22 @@ document.addEventListener('DOMContentLoaded', () => {
     collageIndicators.addEventListener('click', (e) => {
       if (e.target.classList.contains('indicator')) {
         const slideIndex = parseInt(e.target.getAttribute('data-slide'));
-        updateSlide(slideIndex, true);
+        if (!isNaN(slideIndex)) {
+          goToSlide(slideIndex);
+        }
       }
     });
   }
 
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (e.target.closest('.hero-collage')) {
-      switch (e.key) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          nextSlide(); // RTL: left arrow goes to next
-          updateSlide(currentSlide, true);
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          prevSlide(); // RTL: right arrow goes to previous
-          updateSlide(currentSlide, true);
-          break;
-        case 'Home':
-          e.preventDefault();
-          updateSlide(0, true);
-          break;
-        case 'End':
-          e.preventDefault();
-          updateSlide(totalSlides - 1, true);
-          break;
-      }
-    }
-  });
-
   // Touch/swipe support
   let touchStartX = 0;
   let touchEndX = 0;
-  let touchStartY = 0;
-  let touchEndY = 0;
 
   if (collageTrack) {
     collageTrack.addEventListener(
       'touchstart',
       (e) => {
         touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
         stopAutoPlay();
       },
       { passive: true }
@@ -1134,7 +1095,6 @@ document.addEventListener('DOMContentLoaded', () => {
       'touchend',
       (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
         handleSwipeGesture();
         setTimeout(startAutoPlay, 3000);
       },
@@ -1144,19 +1104,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handleSwipeGesture() {
     const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
     const minSwipeDistance = 50;
 
-    // Only process horizontal swipes (ignore vertical)
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+    if (Math.abs(deltaX) > minSwipeDistance) {
       if (deltaX > 0) {
-        // RTL: swipe right = previous
-        prevSlide();
-        updateSlide(currentSlide, true);
+        // Swipe right = previous (in RTL)
+        const prevIndex = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateSlide(prevIndex);
       } else {
-        // RTL: swipe left = next
+        // Swipe left = next (in RTL)
         nextSlide();
-        updateSlide(currentSlide, true);
       }
     }
   }
@@ -1164,30 +1121,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Pause auto-play when tab is not visible
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      startAutoPlay();
+      if (!autoPlayInterval) {
+        startAutoPlay();
+      }
     } else {
       stopAutoPlay();
     }
   });
 
-  // Pause auto-play on hover (desktop)
-  if (collageTrack) {
+  // Pause auto-play on hover (desktop only)
+  if (collageTrack && window.matchMedia('(hover: hover)').matches) {
     collageTrack.addEventListener('mouseenter', stopAutoPlay);
-    collageTrack.addEventListener('mouseleave', startAutoPlay);
+    collageTrack.addEventListener('mouseleave', () => {
+      if (!autoPlayInterval) {
+        startAutoPlay();
+      }
+    });
   }
 
   // Initialize carousel
-  updateNavigationState();
-  startAutoPlay();
+  if (collageTrack && collageIndicators) {
+    // Ensure initial state
+    updateSlide(0);
 
-  // Preload next image for better performance
-  function preloadNextImage() {
-    const nextIndex = (currentSlide + 1) % totalSlides;
-    const nextSlide = document.querySelector(`.collage-slide:nth-child(${nextIndex + 1}) img`);
-    if (nextSlide && !nextSlide.complete) {
-      nextSlide.loading = 'eager';
-    }
+    // Start auto-play after a short delay
+    setTimeout(() => {
+      startAutoPlay();
+    }, 1000);
   }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    stopAutoPlay();
+  });
 
   // Call preload after initial setup
   setTimeout(preloadNextImage, 1000);
