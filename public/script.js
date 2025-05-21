@@ -986,22 +986,40 @@ function adjustModalForMobile() {
 window.addEventListener('resize', adjustModalForMobile);
 document.addEventListener('DOMContentLoaded', () => {
   // === Simple Slideshow Logic ===
+  // === Optimized Slideshow Logic ===
   let slideIndex = 0;
-  showSlides();
+  let slideshowInterval;
 
-  function showSlides() {
+  function initSlideshow() {
     const slides = document.getElementsByClassName('mySlides');
 
-    for (let i = 0; i < slides.length; i++) {
-      slides[i].classList.remove('show');
-    }
+    if (slides.length === 0) return;
 
-    slideIndex++;
-    if (slideIndex > slides.length) {
-      slideIndex = 1;
-    }
+    // Show first slide immediately
+    slides[0].classList.add('show');
 
-    slides[slideIndex - 1].classList.add('show');
-    setTimeout(showSlides, 4000);
+    // Start automatic slideshow
+    slideshowInterval = setInterval(nextSlide, 4000);
   }
+
+  function nextSlide() {
+    const slides = document.getElementsByClassName('mySlides');
+
+    if (slides.length === 0) return;
+
+    // Remove show class from current slide
+    slides[slideIndex].classList.remove('show');
+
+    // Move to next slide
+    slideIndex = (slideIndex + 1) % slides.length;
+
+    // Show next slide
+    slides[slideIndex].classList.add('show');
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure images are loaded
+    setTimeout(initSlideshow, 100);
+  });
 });
