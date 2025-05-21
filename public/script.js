@@ -985,77 +985,23 @@ function adjustModalForMobile() {
 // Call this on page load and window resize
 window.addEventListener('resize', adjustModalForMobile);
 document.addEventListener('DOMContentLoaded', () => {
-  const collageTrack = document.getElementById('collage-track');
-  const slides = collageTrack.querySelectorAll('.collage-slide');
-  let currentSlide = 0;
-  let autoPlayInterval;
-  let isTransitioning = false;
+  // === Simple Slideshow Logic ===
+  let slideIndex = 0;
+  showSlides();
 
-  function nextSlide() {
-    if (!collageTrack || isTransitioning) return;
+  function showSlides() {
+    const slides = document.getElementsByClassName('mySlides');
 
-    isTransitioning = true;
-    currentSlide = (currentSlide + 1) % slides.length;
-
-    const percent = 100 / slides.length;
-    const translateX = -(currentSlide * percent);
-    collageTrack.style.transform = `translateX(${translateX}%)`;
-
-    // Optional: update active class
-    slides.forEach((slide, idx) => {
-      slide.classList.toggle('active', idx === currentSlide);
-    });
-
-    setTimeout(() => {
-      isTransitioning = false;
-    }, 900);
-  }
-
-  function preloadImages() {
-    const images = collageTrack.querySelectorAll('img');
-    let loadedCount = 0;
-
-    images.forEach((img) => {
-      if (img.complete) {
-        loadedCount++;
-      } else {
-        img.addEventListener('load', () => {
-          loadedCount++;
-          if (loadedCount === images.length) {
-            console.log('All carousel images loaded');
-          }
-        });
-      }
-    });
-  }
-
-  function startAutoPlay() {
-    if (!autoPlayInterval) {
-      autoPlayInterval = setInterval(nextSlide, 4000);
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].style.display = 'none';
     }
-  }
 
-  function stopAutoPlay() {
-    if (autoPlayInterval) {
-      clearInterval(autoPlayInterval);
-      autoPlayInterval = null;
+    slideIndex++;
+    if (slideIndex > slides.length) {
+      slideIndex = 1;
     }
-  }
 
-  if (collageTrack) {
-    collageTrack.style.transform = 'translateX(0%)';
-    preloadImages();
-
-    setTimeout(() => {
-      startAutoPlay();
-    }, 1500);
-
-    document.addEventListener('visibilitychange', () => {
-      document.visibilityState === 'visible' ? startAutoPlay() : stopAutoPlay();
-    });
-
-    window.addEventListener('focus', startAutoPlay);
-    window.addEventListener('blur', stopAutoPlay);
-    window.addEventListener('beforeunload', stopAutoPlay);
+    slides[slideIndex - 1].style.display = 'block';
+    setTimeout(showSlides, 4000); // Change image every 4 seconds
   }
 });

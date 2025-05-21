@@ -1611,89 +1611,60 @@ button {
     border-radius: var(--radius);
   }
 }
-/* === Hero Collage Carousel === */
-.hero-collage {
+.hero-slideshow {
   width: 100%;
   background-color: var(--gray-100);
+  overflow: hidden;
   padding: 0;
   margin: 0;
-  overflow: hidden;
+}
+
+.slideshow-container {
   position: relative;
-}
-
-/* === Collage Carousel === */
-.collage-container {
-  overflow: hidden;
-  width: 100%;
-  position: relative;
-}
-
-.collage-track {
-  display: flex;
-  width: 600%; /* 6 slides, adjust dynamically via JS if needed */
-  transition: transform 0.8s ease-in-out;
-  will-change: transform;
-}
-
-.collage-slide {
-  flex: 0 0 16.666667%; /* 100 / 6 slides */
   max-width: 100%;
-  box-sizing: border-box;
+  height: auto;
+  margin: auto;
 }
 
-.collage-slide img {
+.mySlides {
+  display: none;
+}
+
+.mySlides img {
   width: 100%;
   height: auto;
-  display: block;
   object-fit: cover;
+  display: block;
 }
 
-/* Preload optimization */
-.collage-slide:not(.active) img {
-  opacity: 1;
+.fade {
+  animation: fadeEffect 1.5s ease-in-out;
 }
 
-/* Responsive Design */
+@keyframes fadeEffect {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive: Optional height setting */
 @media (max-width: 768px) {
-  .collage-container {
+  .mySlides img {
     height: 250px;
   }
 }
 
 @media (max-width: 576px) {
-  .collage-container {
+  .mySlides img {
     height: 200px;
   }
 }
 
 @media (max-width: 480px) {
-  .collage-container {
+  .mySlides img {
     height: 180px;
   }
-}
-
-/* Reduce motion for accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .collage-track {
-    transition: transform 0.5s ease;
-  }
-}
-
-/* Print styles */
-@media print {
-  .hero-collage {
-    height: 150px;
-    background: white;
-  }
-
-  .collage-track {
-    transform: translateX(0) !important;
-  }
-
-  .collage-slide:not(:first-child) {
-    display: none;
-  }
-}
-.collage-slide img {
-  aspect-ratio: 16 / 9;
 }
