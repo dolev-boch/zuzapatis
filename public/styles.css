@@ -1447,45 +1447,39 @@ button {
   box-shadow: none !important;
   border-color: transparent !important;
 }
+/* Improved spacing for quantity selector on mobile */
 @media (max-width: 576px) {
-  .basket-item-price {
-    top: 20px;
-    right: auto; /* Remove any right positioning */
-    left: 8px; /* Position from the left side with some padding */
-  }
-
-  .basket-item-actions {
-    width: 85%; /* Reduce width to create more space on the right */
-    margin-top: 8px;
-    justify-content: flex-start; /* Align items to the start */
-    gap: 12px; /* Increase gap between elements */
-  }
-
-  /* Ensure the quantity area is properly spaced */
-  .item-quantity {
-    min-width: 44px; /* Ensure consistent width */
-    text-align: center;
-  }
-
-  /* Handle quantity selector in product cards */
-  .quantity-selector {
-    width: 100%;
-    max-width: 220px; /* Limit maximum width */
-    justify-content: space-between;
-  }
-
-  /* Move price further from quantity controls in basket */
   .product-footer {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
   }
 
-  .product-footer .product-price {
-    margin-bottom: 4px;
+  .product-price {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-right: auto; /* Push to the right in RTL layout */
   }
 
-  .add-to-basket-wrapper {
+  .quantity-selector {
     width: 100%;
+    justify-content: flex-start;
+    margin-top: 8px; /* Add space between price and quantity selector */
+    padding: 12px;
+    border-radius: var(--radius);
+    background-color: var(--gray-100);
+  }
+
+  .quantity-selector .quantity-input {
+    min-width: 50px;
+    text-align: center;
+  }
+
+  /* Ensure enough space between plus/minus buttons and confirm */
+  .quantity-selector .confirm-add {
+    margin-right: auto; /* Push to the right in RTL */
+    min-width: 80px;
   }
 }
