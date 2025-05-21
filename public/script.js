@@ -477,7 +477,6 @@ function hideThankYouModal() {
 async function submitOrder(formData) {
   const webhookUrl = 'https://hook.eu2.make.com/sq44pfhp3uqrdmj7on6zp4osy0ci4duy';
 
-  // Prepare the data to be sent to the webhook
   const orderData = {
     customer: {
       firstName: formData.get('firstName'),
@@ -513,18 +512,16 @@ async function submitOrder(formData) {
       throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    console.log('Order successfully submitted:', data);
+    // קורא את התגובה כטקסט ולא JSON
+    const responseText = await response.text();
+    console.log('Order successfully submitted, response:', responseText);
 
-    // Clear basket after successful order
     clearBasket();
-
-    // UI updates after successful submission
     hideCheckoutModal();
     showThankYouModal();
   } catch (error) {
     console.error('Error submitting order:', error);
-    alert('אירעה שגיאה בשליחת ההזמנה. אנא נסו שוב מאוחר יותר או צרו קשר טלפונית.');
+    alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
   }
 }
 
@@ -539,21 +536,12 @@ function clearBasket() {
 function validateForm(formData) {
   const firstName = formData.get('firstName').trim();
   const lastName = formData.get('lastName').trim();
-  const email = formData.get('email').trim();
   const phone = formData.get('phone').trim();
 
-  if (!firstName || !lastName) {
+  if (!firstName || !lastName || !phone) {
     return {
       valid: false,
       message: 'יש למלא את כל שדות החובה',
-    };
-  }
-
-  // Validate email format if provided
-  if (email && !isValidEmail(email)) {
-    return {
-      valid: false,
-      message: 'אנא הזן כתובת אימייל תקינה',
     };
   }
 
@@ -568,12 +556,6 @@ function validateForm(formData) {
   return {
     valid: true,
   };
-}
-
-// Email validation
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
 }
 
 // Phone validation
