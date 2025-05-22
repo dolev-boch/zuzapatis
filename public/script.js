@@ -542,8 +542,16 @@ function showBasketSidebar() {
 }
 // Hide Basket Sidebar
 function hideBasketSidebar() {
+  console.log('📱 Closing basket sidebar...');
+
   basketSidebar.classList.remove('show');
   overlay.classList.remove('show');
+
+  // Reset forced styles
+  basketSidebar.style.transform = '';
+  basketSidebar.style.zIndex = '';
+  overlay.style.zIndex = '';
+
   document.body.style.overflow = '';
 
   // Show floating basket when sidebar is closed
