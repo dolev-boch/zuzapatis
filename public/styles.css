@@ -71,6 +71,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-direction: row;
 }
 
 .logo {
@@ -457,6 +458,9 @@ main {
 
 /* Mobile-specific basket sidebar fixes */
 @media (max-width: 768px) {
+  .header-content {
+    flex-direction: row-reverse;
+  }
   .basket-sidebar {
     max-width: 100vw;
     width: 100vw;
@@ -711,7 +715,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1100;
+  z-index: 11000;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -1837,12 +1841,16 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 10000;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-
+.loading-overlay:not(.show) {
+  display: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
 .loading-overlay.show {
   opacity: 1;
   visibility: visible;
