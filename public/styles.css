@@ -156,7 +156,8 @@ header {
 
 /* === Main Content === */
 main {
-  padding: 24px 0 140px; /* Increased bottom padding for floating buttons */
+  padding: 24px 0;
+  margin-bottom: 120px; /* Safe margin instead of padding */
 }
 
 .section-title {
@@ -1173,13 +1174,35 @@ main {
     top: 22px;
   }
 }
-/* === Modern Interaction Enhancements === */
-@media (hover: hover) {
-  .add-to-basket:hover,
-  .checkout-button:hover:not(.disabled),
+/* === Smooth Hover Effects === */
+.add-to-basket,
+.checkout-button,
+.submit-button,
+.close-thank-you,
+.product-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .add-to-basket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(184, 153, 89, 0.3);
+  }
+
+  .checkout-button:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(184, 153, 89, 0.3);
+  }
+
   .submit-button:hover,
   .close-thank-you:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(184, 153, 89, 0.3);
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -1355,10 +1378,11 @@ button {
   }
 }
 /* Floating Basket Button */
+/* Floating Basket Button - Optimized Positioning */
 .floating-basket-button {
   position: fixed;
-  bottom: 20px;
-  left: 90px;
+  bottom: 24px;
+  left: 88px;
   background-color: var(--primary);
   color: white;
   width: 60px;
@@ -1368,16 +1392,15 @@ button {
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  box-shadow: var(--shadow);
-  z-index: 101; /* Higher than WhatsApp button */
-  transition: var(--transition);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   cursor: pointer;
-  /* Ensure button stays accessible */
   pointer-events: auto;
-  /* Hardware acceleration */
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  /* Ensure proper stacking */
+  isolation: isolate;
 }
 
 .floating-basket-button:hover,
@@ -1419,17 +1442,28 @@ button {
 
 @media (max-width: 576px) {
   .floating-basket-button {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    bottom: 15px;
-    left: 75px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    bottom: 20px;
+    left: 76px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
   }
 
-  .floating-basket-count {
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
+  .whatsapp-button {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    bottom: 20px;
+    left: 16px;
+  }
+
+  /* Ensure quantity selector stays above floating buttons */
+  .quantity-selector {
+    position: relative;
+    z-index: 1001;
+    background-color: var(--white);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -2099,5 +2133,57 @@ button {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     max-height: 90vh;
+  }
+}
+/* === Safe Zone for Floating Elements === */
+.products-section {
+  position: relative;
+  z-index: 1;
+}
+
+.products-grid {
+  margin-bottom: 40px; /* Extra space for last items */
+}
+
+/* Create invisible safe zone that pushes content up */
+.content-safe-zone {
+  height: 100px;
+  width: 100%;
+  pointer-events: none;
+  display: block;
+}
+
+/* Ensure floating buttons never overlap interactive content */
+.floating-basket-button,
+.whatsapp-button {
+  pointer-events: auto;
+  z-index: 1000;
+}
+
+/* Mobile-specific safe zones */
+@media (max-width: 768px) {
+  .products-grid {
+    margin-bottom: 60px;
+  }
+
+  /* Prevent overlap with last product card */
+  .products-grid .product-card:nth-last-child(-n + 2) {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  main {
+    margin-bottom: 140px; /* More space on small screens */
+  }
+
+  .products-grid {
+    margin-bottom: 80px;
+  }
+
+  /* Extra protection for last items */
+  .products-grid .product-card:last-child {
+    padding-bottom: 20px;
+    margin-bottom: 40px;
   }
 }
