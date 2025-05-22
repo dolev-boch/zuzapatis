@@ -579,67 +579,59 @@ function hideCheckoutModal() {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
 }
-// Add immediate visual feedback for mobile touches
-// Add immediate visual feedback for mobile touches
-function addMobileTouchFeedback() {
-  const touchElements = [
-    document.getElementById('basket-toggle'), // Header basket icon
+// CRITICAL: Fix mobile touch events
+function fixMobileTouchEvents() {
+  console.log('🔧 Fixing mobile touch events...');
+
+  const criticalButtons = [
+    document.getElementById('basket-toggle'),
     document.getElementById('floating-basket-button'),
     document.querySelector('.whatsapp-button'),
-  ].filter((el) => el); // Remove null elements
+  ].filter((btn) => btn);
 
-  touchElements.forEach((element) => {
-    // Add touch start feedback
-    element.addEventListener(
+  criticalButtons.forEach((button) => {
+    button.style.pointerEvents = 'auto';
+    button.style.touchAction = 'manipulation';
+
+    if (button.id === 'basket-toggle') {
+      button.style.backgroundColor = 'transparent';
+      button.style.color = 'var(--white)';
+    } else if (button.id === 'floating-basket-button') {
+      button.style.backgroundColor = 'var(--primary)';
+      button.style.color = 'white';
+    } else if (button.classList.contains('whatsapp-button')) {
+      button.style.backgroundColor = '#25d366';
+      button.style.color = 'white';
+    }
+
+    button.addEventListener(
       'touchstart',
       function (e) {
-        // Prevent any default browser behavior
-        e.preventDefault();
-
-        // Immediate visual feedback - scale down slightly
-        this.style.transform = 'scale(0.95)';
-        this.style.transition = 'transform 0.1s ease';
-
-        // For header basket icon, add subtle background
-        if (this.id === 'basket-toggle') {
-          this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-        }
-      },
-      { passive: false }
-    ); // Changed to false to allow preventDefault
-
-    // Reset on touch end
-    element.addEventListener(
-      'touchend',
-      function (e) {
-        // Reset transform
-        this.style.transform = '';
-        this.style.transition = '';
-
-        // Reset header basket background
-        if (this.id === 'basket-toggle') {
-          this.style.backgroundColor = '';
-        }
+        this.style.opacity = '0.8';
       },
       { passive: true }
     );
 
-    // Reset on touch cancel (user drags away)
-    element.addEventListener(
+    button.addEventListener(
+      'touchend',
+      function (e) {
+        this.style.opacity = '1';
+      },
+      { passive: true }
+    );
+
+    button.addEventListener(
       'touchcancel',
       function (e) {
-        this.style.transform = '';
-        this.style.transition = '';
-
-        // Reset header basket background
-        if (this.id === 'basket-toggle') {
-          this.style.backgroundColor = '';
-        }
+        this.style.opacity = '1';
       },
       { passive: true }
     );
   });
 }
+// Add immediate visual feedback for mobile touches
+// Add immediate visual feedback for mobile touches
+
 // Show Thank You Modal
 function showThankYouModal() {
   thankYouModal.classList.add('show');
@@ -930,13 +922,14 @@ function isValidPhone(phone) {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+  fixMobileTouchEvents();
+
   // Render products
   renderProducts();
 
   // Initialize basket
   updateBasket();
   setTimeout(initSlideshow, 100);
-  addMobileTouchFeedback();
 
   if (floatingBasketBtn) {
     floatingBasketBtn.addEventListener('click', showBasketSidebar);

@@ -2126,106 +2126,76 @@ button {
   transform: translateY(-5px) scale(0.8);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* === Fix Mobile Touch States === */
-/* === Fix Mobile Touch States === */
-/* Remove all unwanted touch/active states */
+/* === Mobile Touch Optimization === */
 .floating-basket-button,
 .whatsapp-button,
 .basket-icon,
+#basket-toggle,
 .add-to-basket,
 .checkout-button,
 .close-basket,
 .close-modal,
 button {
-  /* Disable iOS tap highlight */
   -webkit-tap-highlight-color: transparent;
-  /* Disable iOS callout */
   -webkit-touch-callout: none;
-  /* Disable text selection */
   -webkit-user-select: none;
   user-select: none;
-  /* Remove focus outline on touch */
-  outline: none;
-  /* Prevent context menu */
-  -webkit-context-menu: none;
-}
-
-/* SPECIFIC FIX for header basket icon */
-.basket-icon,
-#basket-toggle {
-  /* Remove iOS active state background */
-  -webkit-tap-highlight-color: transparent !important;
-  /* Prevent iOS from changing background */
-  background-color: transparent !important;
-  /* Force touch response */
   touch-action: manipulation;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
+/* Remove conflicting states */
+.floating-basket-button:active,
+.floating-basket-button:focus,
 .basket-icon:active,
 .basket-icon:focus,
 #basket-toggle:active,
-#basket-toggle:focus {
-  /* Force original colors on active/focus */
-  background-color: transparent !important;
-  color: var(--white) !important;
-  /* Remove any transform that might interfere */
-  transform: none !important;
-  /* Immediate reset */
-  transition: none !important;
-}
-
-/* Remove active/pressed states that interfere with JavaScript */
-.floating-basket-button:active,
-.floating-basket-button:focus,
-.floating-basket-button[aria-pressed],
-.basket-icon:active,
-.basket-icon:focus,
-.basket-icon[aria-pressed],
+#basket-toggle:focus,
 .whatsapp-button:active,
 .whatsapp-button:focus {
   background-color: inherit !important;
   color: inherit !important;
   transform: none !important;
-  opacity: 1 !important;
-  /* Force immediate reset */
   transition: none !important;
 }
 
-/* iOS Safari specific fixes */
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .floating-basket-button {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border: none !important;
+  }
+
+  .whatsapp-button {
+    background-color: #25d366 !important;
+    color: white !important;
+    border: none !important;
+  }
+
+  .basket-icon,
+  #basket-toggle {
+    background-color: transparent !important;
+    color: var(--white) !important;
+  }
+
+  .floating-basket-button,
+  .whatsapp-button,
+  .basket-icon,
+  #basket-toggle {
+    transition: background-color 0.1s ease;
+    z-index: 1000;
+    position: fixed;
+  }
+}
+
 @supports (-webkit-touch-callout: none) {
   .floating-basket-button,
   .basket-icon,
   #basket-toggle,
   .whatsapp-button {
-    /* Prevent iOS from applying any visual feedback */
     -webkit-appearance: none;
     appearance: none;
-    /* Ensure touch events work immediately */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
-  }
-}
-
-/* Force immediate click response on mobile */
-@media (max-width: 768px) {
-  .floating-basket-button,
-  .basket-icon,
-  #basket-toggle,
-  .whatsapp-button,
-  .add-to-basket {
-    /* Faster touch response */
-    touch-action: manipulation;
-    /* Remove any delay */
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    /* Ensure immediate visual feedback through JS only */
-    transition: none;
-  }
-
-  /* Ensure quantity selector stays above floating buttons */
-  .quantity-selector {
-    position: relative;
-    z-index: 1001;
-    background-color: var(--white);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 }
