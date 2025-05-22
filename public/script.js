@@ -665,7 +665,7 @@ function submitOrder(formData) {
 
   // Your Google Apps Script URL
   const baseUrl =
-    'https://script.google.com/macros/s/AKfycbzcaShvbevT4aq5qFZxhzD52K-J-5_65lxXrGF_7EoUtR_sCTNaQ7hbF4XucCHSTSJr_A/exec';
+    'https://script.google.com/macros/s/AKfycbx3CBIx7xpYbvr05Kkbw9nmiNQ16fCKKSOtiAumYo1WLiCgTwQ5PXJ1eRod6EpzlwvNjg/exec';
   const url = `${baseUrl}?${params.toString()}`;
 
   console.log('📡 JSONP URL:', url);
