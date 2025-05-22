@@ -458,9 +458,6 @@ main {
 
 /* Mobile-specific basket sidebar fixes */
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: row-reverse;
-  }
   .basket-sidebar {
     max-width: 100vw;
     width: 100vw;
@@ -2194,7 +2191,6 @@ button {
   #basket-toggle {
     transition: background-color 0.1s ease;
     z-index: 1000;
-    position: fixed;
   }
 }
 
