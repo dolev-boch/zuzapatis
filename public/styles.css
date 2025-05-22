@@ -1660,13 +1660,23 @@ button {
   object-fit: cover;
   object-position: center;
   display: block;
-  /* Additional fixes for smooth rendering */
+  /* Fix for image lines/artifacts */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: auto;
+  /* Anti-aliasing fixes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Hardware acceleration */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  /* Prevent sub-pixel rendering issues */
+  transform: translate3d(0, 0, 0);
 }
-
 /* Ensure sidebar stays above slideshow */
 .basket-sidebar {
   z-index: 1000 !important; /* Force sidebar above slideshow */
