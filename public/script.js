@@ -522,6 +522,7 @@ function addBasketItemEventListeners() {
 }
 
 // Show Basket Sidebar
+// Show Basket Sidebar
 function showBasketSidebar() {
   basketSidebar.classList.add('show');
   overlay.classList.add('show');
@@ -539,7 +540,6 @@ function showBasketSidebar() {
     closeBasket.focus();
   }, 100);
 }
-
 // Hide Basket Sidebar
 function hideBasketSidebar() {
   basketSidebar.classList.remove('show');
@@ -553,7 +553,6 @@ function hideBasketSidebar() {
   const whatsappBtn = document.querySelector('.whatsapp-button');
   if (whatsappBtn) whatsappBtn.classList.remove('hidden');
 }
-
 // Show Checkout Modal
 function showCheckoutModal() {
   checkoutModal.classList.add('show');
@@ -573,9 +572,10 @@ function hideCheckoutModal() {
   document.body.style.overflow = '';
 }
 // Add immediate visual feedback for mobile touches
+// Add immediate visual feedback for mobile touches
 function addMobileTouchFeedback() {
   const touchElements = [
-    document.getElementById('basket-toggle'),
+    document.getElementById('basket-toggle'), // Header basket icon
     document.getElementById('floating-basket-button'),
     document.querySelector('.whatsapp-button'),
   ].filter((el) => el); // Remove null elements
@@ -585,12 +585,20 @@ function addMobileTouchFeedback() {
     element.addEventListener(
       'touchstart',
       function (e) {
-        // Immediate visual feedback
+        // Prevent any default browser behavior
+        e.preventDefault();
+
+        // Immediate visual feedback - scale down slightly
         this.style.transform = 'scale(0.95)';
         this.style.transition = 'transform 0.1s ease';
+
+        // For header basket icon, add subtle background
+        if (this.id === 'basket-toggle') {
+          this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        }
       },
-      { passive: true }
-    );
+      { passive: false }
+    ); // Changed to false to allow preventDefault
 
     // Reset on touch end
     element.addEventListener(
@@ -599,6 +607,11 @@ function addMobileTouchFeedback() {
         // Reset transform
         this.style.transform = '';
         this.style.transition = '';
+
+        // Reset header basket background
+        if (this.id === 'basket-toggle') {
+          this.style.backgroundColor = '';
+        }
       },
       { passive: true }
     );
@@ -609,6 +622,11 @@ function addMobileTouchFeedback() {
       function (e) {
         this.style.transform = '';
         this.style.transition = '';
+
+        // Reset header basket background
+        if (this.id === 'basket-toggle') {
+          this.style.backgroundColor = '';
+        }
       },
       { passive: true }
     );

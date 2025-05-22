@@ -2034,107 +2034,7 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
-/* Floating Basket Button - COMPLETE SECTION */
-.floating-basket-button {
-  position: fixed;
-  bottom: 20px;
-  left: 90px;
-  background-color: var(--primary);
-  color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: var(--shadow);
-  z-index: 101;
-  transition: var(--transition);
-  border: none;
-  cursor: pointer;
-  pointer-events: auto;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-}
 
-.floating-basket-button:hover,
-.floating-basket-button:focus {
-  transform: translateY(-5px) translateZ(0);
-  box-shadow: var(--shadow-lg);
-  background-color: var(--accent);
-  color: white;
-}
-
-.floating-basket-button.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateZ(0) scale(0.8);
-}
-
-.floating-basket-count {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: var(--accent);
-  color: var(--white);
-  font-size: 0.75rem;
-  font-weight: bold;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.floating-basket-button.pulse {
-  animation: pulse 0.7s ease-in-out;
-}
-/* Mobile responsive for floating buttons */
-@media (max-width: 768px) {
-  .floating-basket-button {
-    bottom: 20px;
-    left: 85px;
-  }
-}
-
-@media (max-width: 576px) {
-  .floating-basket-button {
-    width: 56px;
-    height: 56px;
-    font-size: 22px;
-    bottom: 16px;
-    left: 80px;
-  }
-
-  .floating-basket-count {
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-  }
-
-  .whatsapp-button {
-    width: 56px;
-    height: 56px;
-    font-size: 22px;
-    bottom: 16px;
-    left: 16px;
-  }
-
-  .modal {
-    align-items: flex-end;
-  }
-
-  .modal-content {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    max-height: 90vh;
-  }
-}
 /* === Safe Zone for Floating Elements === */
 .products-section {
   position: relative;
@@ -2194,6 +2094,7 @@ button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* === Fix Mobile Touch States === */
+/* === Fix Mobile Touch States === */
 /* Remove all unwanted touch/active states */
 .floating-basket-button,
 .whatsapp-button,
@@ -2214,6 +2115,30 @@ button {
   outline: none;
   /* Prevent context menu */
   -webkit-context-menu: none;
+}
+
+/* SPECIFIC FIX for header basket icon */
+.basket-icon,
+#basket-toggle {
+  /* Remove iOS active state background */
+  -webkit-tap-highlight-color: transparent !important;
+  /* Prevent iOS from changing background */
+  background-color: transparent !important;
+  /* Force touch response */
+  touch-action: manipulation;
+}
+
+.basket-icon:active,
+.basket-icon:focus,
+#basket-toggle:active,
+#basket-toggle:focus {
+  /* Force original colors on active/focus */
+  background-color: transparent !important;
+  color: var(--white) !important;
+  /* Remove any transform that might interfere */
+  transform: none !important;
+  /* Immediate reset */
+  transition: none !important;
 }
 
 /* Remove active/pressed states that interfere with JavaScript */
@@ -2237,12 +2162,14 @@ button {
 @supports (-webkit-touch-callout: none) {
   .floating-basket-button,
   .basket-icon,
+  #basket-toggle,
   .whatsapp-button {
     /* Prevent iOS from applying any visual feedback */
     -webkit-appearance: none;
     appearance: none;
     /* Ensure touch events work immediately */
     touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   }
 }
 
@@ -2250,6 +2177,7 @@ button {
 @media (max-width: 768px) {
   .floating-basket-button,
   .basket-icon,
+  #basket-toggle,
   .whatsapp-button,
   .add-to-basket {
     /* Faster touch response */
@@ -2258,5 +2186,13 @@ button {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     /* Ensure immediate visual feedback through JS only */
     transition: none;
+  }
+
+  /* Ensure quantity selector stays above floating buttons */
+  .quantity-selector {
+    position: relative;
+    z-index: 1001;
+    background-color: var(--white);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 }
