@@ -1612,22 +1612,21 @@ button {
   }
 }
 /* === Hero Slideshow === */
+/* === Hero Slideshow === */
 .hero-slideshow {
-  width: 100vw; /* Full viewport width */
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  width: 100%;
   background-color: var(--gray-100);
   overflow: hidden;
+  margin: 0;
   padding: 0;
 }
 
 .slideshow-container {
   position: relative;
   width: 100%;
-  height: 280px; /* Proportional height for full width */
+  max-width: 1200px; /* Matches your container max-width */
+  margin: 0 auto;
+  height: 250px; /* Proportional to website layout */
   background-color: var(--gray-200);
 }
 
@@ -1655,33 +1654,35 @@ button {
   display: block;
 }
 
-/* Smart responsive scaling for full width */
+/* Smart responsive scaling that respects layout boundaries */
 @media (max-width: 1200px) {
-  .slideshow-container {
-    height: 250px;
-  }
-}
-
-@media (max-width: 992px) {
   .slideshow-container {
     height: 220px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .slideshow-container {
     height: 200px;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .slideshow-container {
     height: 180px;
+    margin: 0 12px; /* Matches your container padding */
+  }
+}
+
+@media (max-width: 576px) {
+  .slideshow-container {
+    height: 160px;
+    margin: 0 10px; /* Matches your mobile container padding */
   }
 }
 
 @media (max-width: 480px) {
   .slideshow-container {
-    height: 160px;
+    height: 140px;
   }
 }
