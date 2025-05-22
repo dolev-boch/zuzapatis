@@ -584,11 +584,7 @@ function hideThankYouModal() {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
 }
-async function submitOrder(formData) {
-  // Your actual Google Apps Script Web App URL
-  const googleSheetsUrl =
-    'https://script.google.com/macros/s/AKfycbyfkNmxb-u4B93NghfwL2GzgWMakobYLfsqaVRnMM4y5mUSClQBbk3s0t5xpspqTTFZyQ/exec';
-
+function submitOrder(formData) {
   const orderData = {
     customer: {
       firstName: formData.get('firstName'),
@@ -605,116 +601,116 @@ async function submitOrder(formData) {
     totalAmount: basket.reduce((total, item) => total + item.price * item.quantity, 0),
   };
 
-  // Create object with all possible products (set to 0 by default)
-  const productQuantities = {
-    'גבינה-באסקית': 0,
-    'גבינה-ניו-יורק': 0,
-    'גבינה-פירורים': 0,
-    'פרסבורגר-גבינה': 0,
-    'גבינה-פקאן': 0,
-    'גבינה-סבלה-קקאו': 0,
-    'בלינצס-גבינה-פירורים': 0,
-    'פחזניות-קראמבל-וניל': 0,
-    'קיש-בטטה': 0,
-    'קיש-ים-תיכוני': 0,
-    'קיש-בצל-פרמזן': 0,
-    'קיש-עגבניות-שרי-צלויות': 0,
-    'מאפה-עלים-גבינות-ותרד': 0,
-    'מארז-מאפי-קרואסון-בשלושה-טעמים': 0,
-    'מארז-בלינצס-גבינות': 0,
-  };
+  // Show loading state
+  const submitButton = document.querySelector('.submit-button');
+  const originalText = submitButton.textContent;
+  submitButton.textContent = 'שולח הזמנה...';
+  submitButton.disabled = true;
 
-  // Create mapping from original titles to form field names
-  const titleMapping = {
-    'גבינה באסקית': 'גבינה-באסקית',
-    'גבינה ניו-יורק': 'גבינה-ניו-יורק',
-    'גבינה פירורים': 'גבינה-פירורים',
-    'פרסבורגר גבינה': 'פרסבורגר-גבינה',
-    'גבינה פקאן': 'גבינה-פקאן',
-    'גבינה סבלה קקאו': 'גבינה-סבלה-קקאו',
-    "בלינצ'ס גבינה פירורים": 'בלינצס-גבינה-פירורים',
-    'פחזניות קראמבל וניל': 'פחזניות-קראמבל-וניל',
-    'קיש בטטה': 'קיש-בטטה',
-    'קיש ים תיכוני': 'קיש-ים-תיכוני',
-    'קיש בצל פרמזן': 'קיש-בצל-פרמזן',
-    'קיש עגבניות שרי צלויות ': 'קיש-עגבניות-שרי-צלויות',
-    'מאפה עלים גבינות ותרד': 'מאפה-עלים-גבינות-ותרד',
-    'מארז מאפי קרואסון בשלושה טעמים': 'מארז-מאפי-קרואסון-בשלושה-טעמים',
-    "מארז בלינצ'ס גבינות": 'מארז-בלינצס-גבינות',
-  };
+  console.log('🚀 Submitting order via JSONP:', orderData);
 
-  // Fill in actual quantities from basket
-  orderData.order.forEach((item) => {
-    const mappedTitle = titleMapping[item.title];
-    if (mappedTitle && productQuantities.hasOwnProperty(mappedTitle)) {
-      productQuantities[mappedTitle] = item.quantity;
+  // Create unique JSONP callback name
+  const callbackName =
+    'zuza_order_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+  // Create global callback function
+  window[callbackName] = function (response) {
+    console.log('📞 JSONP callback received:', response);
+
+    // Cleanup
+    if (script && script.parentNode) {
+      document.head.removeChild(script);
     }
-  });
-
-  // Create FormData instead of JSON (to avoid CORS preflight)
-  const formDataToSend = new FormData();
-
-  // Add basic order info
-  formDataToSend.append('timestamp', new Date().toISOString());
-  formDataToSend.append(
-    'fullName',
-    `${orderData.customer.firstName} ${orderData.customer.lastName}`
-  );
-  formDataToSend.append('firstName', orderData.customer.firstName);
-  formDataToSend.append('lastName', orderData.customer.lastName);
-  formDataToSend.append('phone', orderData.customer.phone);
-  formDataToSend.append('orderDate', new Date().toLocaleDateString('he-IL'));
-  formDataToSend.append('notes', orderData.customer.notes || 'ללא הערות');
-  formDataToSend.append('totalAmount', orderData.totalAmount);
-  formDataToSend.append('totalAmountFormatted', `₪${orderData.totalAmount}`);
-
-  // Add all product quantities
-  Object.entries(productQuantities).forEach(([key, value]) => {
-    formDataToSend.append(key, value);
-  });
-
-  // Add order items as JSON string
-  formDataToSend.append('orderItems', JSON.stringify(orderData.order));
-
-  console.log('Sending order via FormData to avoid CORS'); // Debug log
-
-  try {
-    // Show loading state
-    const submitButton = document.querySelector('.submit-button');
-    const originalText = submitButton.textContent;
-    submitButton.textContent = 'שולח...';
-    submitButton.disabled = true;
-
-    // Use no-cors mode to avoid CORS preflight
-    const response = await fetch(googleSheetsUrl, {
-      method: 'POST',
-      mode: 'no-cors', // This prevents CORS errors but limits response reading
-      body: formDataToSend,
-    });
+    delete window[callbackName];
+    clearTimeout(timeoutId);
 
     // Reset button state
     submitButton.textContent = originalText;
     submitButton.disabled = false;
 
-    console.log('Request sent successfully (no-cors mode)');
+    if (response && response.success) {
+      console.log('✅ Order submitted successfully via JSONP');
+      console.log('📊 Order details:', response);
 
-    // With no-cors mode, we can't read the response but the request should go through
-    // We'll assume success if no error was thrown
-    clearBasket();
-    hideCheckoutModal();
-    showThankYouModal();
-  } catch (error) {
-    console.error('Error submitting order:', error);
+      // Show success and clear basket
+      clearBasket();
+      hideCheckoutModal();
+      showThankYouModal();
+
+      // Optional: Show additional success info
+      if (response.rowNumber) {
+        console.log(`📋 Order saved to row ${response.rowNumber} in Google Sheets`);
+      }
+    } else {
+      console.error('❌ Order submission failed:', response);
+      alert(
+        'אירעה שגיאה בשליחת ההזמנה: ' +
+          (response.message || response.error || 'שגיאה לא ידועה') +
+          '\n\nאנא נסו שוב או צרו קשר טלפוני: 04-842-2355'
+      );
+    }
+  };
+
+  // Create URL with parameters
+  const params = new URLSearchParams();
+  params.append('callback', callbackName);
+  params.append('firstName', orderData.customer.firstName);
+  params.append('lastName', orderData.customer.lastName);
+  params.append('phone', orderData.customer.phone);
+  params.append('notes', orderData.customer.notes || 'ללא הערות');
+  params.append('totalAmount', orderData.totalAmount);
+  params.append('orderItems', JSON.stringify(orderData.order));
+
+  // Your Google Apps Script URL
+  const baseUrl =
+    'https://script.google.com/macros/s/AKfycbwS1gUIqJ_q35pIW3ZvBtmUfe0HJfTIbHcgstXgB5Ot7xkWAksP9j7i4xSqFFm_R2ZAjg/exec';
+  const url = `${baseUrl}?${params.toString()}`;
+
+  console.log('📡 JSONP URL:', url);
+
+  // Create script tag for JSONP
+  const script = document.createElement('script');
+  script.src = url;
+  script.onerror = function () {
+    console.error('💥 JSONP script loading failed');
+
+    // Cleanup
+    if (script.parentNode) {
+      document.head.removeChild(script);
+    }
+    delete window[callbackName];
+    clearTimeout(timeoutId);
 
     // Reset button state
-    const submitButton = document.querySelector('.submit-button');
-    submitButton.textContent = 'סיום ושליחת הזמנה';
+    submitButton.textContent = originalText;
     submitButton.disabled = false;
 
-    alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
-  }
-}
+    alert(
+      'שגיאה בחיבור לשרת. אנא בדקו את החיבור לאינטרנט ונסו שוב, או צרו קשר טלפוני: 04-842-2355'
+    );
+  };
 
+  // Add timeout protection (15 seconds)
+  const timeoutId = setTimeout(() => {
+    console.error('⏰ JSONP request timed out');
+
+    if (script && script.parentNode) {
+      document.head.removeChild(script);
+    }
+    delete window[callbackName];
+
+    // Reset button state
+    submitButton.textContent = originalText;
+    submitButton.disabled = false;
+
+    alert(
+      'תם הזמן המוקצב לשליחת ההזמנה. ייתכן שהרשת איטית.\n\nאנא נסו שוב או צרו קשר טלפוני: 04-842-2355'
+    );
+  }, 15000);
+
+  // Add script to head to execute JSONP request
+  document.head.appendChild(script);
+}
 // Clear basket
 function clearBasket() {
   basket = [];
