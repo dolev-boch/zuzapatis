@@ -1639,8 +1639,14 @@ button {
   top: 0;
   left: 0;
   opacity: 0;
-  transition: opacity 0.8s ease-in-out;
+  transition: opacity 0.6s ease-in-out;
   z-index: 1;
+  /* Fix for blinking line/cursor effect */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: opacity;
 }
 
 .mySlides.show {
@@ -1654,6 +1660,11 @@ button {
   object-fit: cover;
   object-position: center;
   display: block;
+  /* Additional fixes for smooth rendering */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Ensure sidebar stays above slideshow */
