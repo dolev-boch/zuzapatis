@@ -623,7 +623,7 @@ async function submitOrder(formData) {
     'מארז-בלינצס-גבינות': 0,
   };
 
-  // Create mapping from original titles to form field names (handle Hebrew properly)
+  // Create mapping from original titles to form field names
   const titleMapping = {
     'גבינה באסקית': 'גבינה-באסקית',
     'גבינה ניו-יורק': 'גבינה-ניו-יורק',
@@ -650,18 +650,26 @@ async function submitOrder(formData) {
     }
   });
 
-  // Prepare data for Formspree
+  // Prepare data for Formspree with ordered fields
   const submissionData = {
-    'שם-מלא': `${orderData.customer.firstName} ${orderData.customer.lastName}`,
-    'טלפון-נייד': orderData.customer.phone,
-    'הערות-הזמנה': orderData.customer.notes || 'ללא הערות',
-    'סה-כ-סכום': `₪${orderData.totalAmount}`,
-    'תאריך-הזמנה': new Date().toLocaleDateString('he-IL'),
+    '01-שם-מלא': `${orderData.customer.firstName} ${orderData.customer.lastName}`,
+    '02-טלפון-נייד': orderData.customer.phone,
+    '03-הערות-הזמנה': orderData.customer.notes || 'ללא הערות',
+    '04-תאריך-הזמנה': new Date().toLocaleDateString('he-IL'),
+    // Add products with numbered prefixes
+    ...Object.keys(productQuantities).reduce((acc, key, index) => {
+      const paddedIndex = String(index + 5).padStart(2, '0');
+      acc[`${paddedIndex}-${key}`] = productQuantities[key];
+      return acc;
+    }, {}),
+    '99-סכום-להזמנה-כולל': `₪${orderData.totalAmount}`,
     _subject: `הזמנה חדשה שבועות - ${orderData.customer.firstName} ${orderData.customer.lastName}`,
-    ...productQuantities, // Spread all product quantities
   };
 
   try {
+    // Add small delay to avoid spam detection
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     const response = await fetch(formspreeUrl, {
       method: 'POST',
       headers: {
@@ -682,7 +690,6 @@ async function submitOrder(formData) {
     alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
   }
 }
-
 // Clear basket
 function clearBasket() {
   basket = [];
