@@ -588,7 +588,7 @@ function hideThankYouModal() {
 async function submitOrder(formData) {
   // Your actual Google Apps Script Web App URL
   const googleSheetsUrl =
-    'https://script.google.com/macros/s/AKfycbx02bArrx66Ic5qrsef_V0-dsxk6boIGoKWDuEfN-FnkrGDoVbbWlCQfwfPSUpKCZIQ1w/exec';
+    'https://script.google.com/macros/s/AKfycbzLCHTq_b5xc6zF8moF-Jj3N8ls0zCdF8p9xU2_8gxy4HWmd-fTewXDI085FyPNtcxfCg/exec';
 
   const orderData = {
     customer: {
