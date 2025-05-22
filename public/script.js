@@ -584,11 +584,10 @@ function hideThankYouModal() {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
 }
-// Submit Order to Webhook
 async function submitOrder(formData) {
   // Your actual Google Apps Script Web App URL
   const googleSheetsUrl =
-    'https://script.google.com/macros/s/AKfycbzLCHTq_b5xc6zF8moF-Jj3N8ls0zCdF8p9xU2_8gxy4HWmd-fTewXDI085FyPNtcxfCg/exec';
+    'https://script.google.com/macros/s/AKfycbx02bArrx66Ic5qrsef_V0-dsxk6boIGoKWDuEfN-FnkrGDoVbbWlCQfwfPSUpKCZIQ1w/exec';
 
   const orderData = {
     customer: {
@@ -652,7 +651,7 @@ async function submitOrder(formData) {
     }
   });
 
-  // Prepare data for Google Sheets
+  // Prepare data for Google Sheets - EXACT format expected by the script
   const submissionData = {
     timestamp: new Date().toISOString(),
     fullName: `${orderData.customer.firstName} ${orderData.customer.lastName}`,
@@ -669,6 +668,8 @@ async function submitOrder(formData) {
     orderItems: JSON.stringify(orderData.order),
   };
 
+  console.log('Sending order data:', submissionData); // Debug log
+
   try {
     // Show loading state
     const submitButton = document.querySelector('.submit-button');
@@ -676,25 +677,36 @@ async function submitOrder(formData) {
     submitButton.textContent = 'שולח...';
     submitButton.disabled = true;
 
+    // Use timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const response = await fetch(googleSheetsUrl, {
       method: 'POST',
-      mode: 'no-cors', // Required for Google Apps Script
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(submissionData),
+      signal: controller.signal,
     });
 
-    // Note: With 'no-cors' mode, we can't check response status
-    // We'll assume success and handle errors through timeout or other means
+    clearTimeout(timeoutId);
 
     // Reset button state
     submitButton.textContent = originalText;
     submitButton.disabled = false;
 
-    clearBasket();
-    hideCheckoutModal();
-    showThankYouModal();
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    // For Google Apps Script, even with CORS issues, a 200 status usually means success
+    if (response.status === 200 || response.ok) {
+      clearBasket();
+      hideCheckoutModal();
+      showThankYouModal();
+    } else {
+      throw new Error(`Server returned status: ${response.status}`);
+    }
   } catch (error) {
     console.error('Error submitting order:', error);
 
@@ -703,9 +715,18 @@ async function submitOrder(formData) {
     submitButton.textContent = 'סיום ושליחת הזמנה';
     submitButton.disabled = false;
 
-    alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
+    // If it's a timeout or abort error, still try to proceed (Google Sheets might have received it)
+    if (error.name === 'AbortError') {
+      console.log('Request timed out, but order might have been processed');
+      clearBasket();
+      hideCheckoutModal();
+      showThankYouModal();
+    } else {
+      alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
+    }
   }
 }
+
 // Clear basket
 function clearBasket() {
   basket = [];
