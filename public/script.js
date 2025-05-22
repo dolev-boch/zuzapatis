@@ -760,7 +760,7 @@ function submitOrder(formData) {
     );
   };
 
-  // Add timeout protection (15 seconds)
+  // Add timeout protection (30 seconds)
   const timeoutId = setTimeout(() => {
     console.error('⏰ JSONP request timed out');
 
@@ -776,7 +776,7 @@ function submitOrder(formData) {
     alert(
       'תם הזמן המוקצב לשליחת ההזמנה. ייתכן שהרשת איטית.\n\nאנא נסו שוב או צרו קשר טלפוני: 04-842-2355'
     );
-  }, 15000);
+  }, 30000);
 
   // Add script to head to execute JSONP request
   document.head.appendChild(script);
