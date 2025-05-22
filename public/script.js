@@ -522,7 +522,6 @@ function addBasketItemEventListeners() {
 }
 
 // Show Basket Sidebar
-// Show Basket Sidebar
 function showBasketSidebar() {
   basketSidebar.classList.add('show');
   overlay.classList.add('show');
@@ -530,6 +529,10 @@ function showBasketSidebar() {
 
   // Hide floating basket when sidebar is open
   if (floatingBasketBtn) floatingBasketBtn.classList.add('hidden');
+
+  // Hide WhatsApp button when basket is open
+  const whatsappBtn = document.querySelector('.whatsapp-button');
+  if (whatsappBtn) whatsappBtn.classList.add('hidden');
 
   // Focus trap for accessibility
   setTimeout(() => {
@@ -545,6 +548,10 @@ function hideBasketSidebar() {
 
   // Show floating basket when sidebar is closed
   if (floatingBasketBtn) floatingBasketBtn.classList.remove('hidden');
+
+  // Show WhatsApp button when basket is closed
+  const whatsappBtn = document.querySelector('.whatsapp-button');
+  if (whatsappBtn) whatsappBtn.classList.remove('hidden');
 }
 
 // Show Checkout Modal
@@ -565,7 +572,48 @@ function hideCheckoutModal() {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
 }
+// Add immediate visual feedback for mobile touches
+function addMobileTouchFeedback() {
+  const touchElements = [
+    document.getElementById('basket-toggle'),
+    document.getElementById('floating-basket-button'),
+    document.querySelector('.whatsapp-button'),
+  ].filter((el) => el); // Remove null elements
 
+  touchElements.forEach((element) => {
+    // Add touch start feedback
+    element.addEventListener(
+      'touchstart',
+      function (e) {
+        // Immediate visual feedback
+        this.style.transform = 'scale(0.95)';
+        this.style.transition = 'transform 0.1s ease';
+      },
+      { passive: true }
+    );
+
+    // Reset on touch end
+    element.addEventListener(
+      'touchend',
+      function (e) {
+        // Reset transform
+        this.style.transform = '';
+        this.style.transition = '';
+      },
+      { passive: true }
+    );
+
+    // Reset on touch cancel (user drags away)
+    element.addEventListener(
+      'touchcancel',
+      function (e) {
+        this.style.transform = '';
+        this.style.transition = '';
+      },
+      { passive: true }
+    );
+  });
+}
 // Show Thank You Modal
 function showThankYouModal() {
   thankYouModal.classList.add('show');
@@ -862,6 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize basket
   updateBasket();
   setTimeout(initSlideshow, 100);
+  addMobileTouchFeedback();
 
   if (floatingBasketBtn) {
     floatingBasketBtn.addEventListener('click', showBasketSidebar);

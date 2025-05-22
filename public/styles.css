@@ -2187,3 +2187,76 @@ button {
     margin-bottom: 40px;
   }
 }
+.whatsapp-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-5px) scale(0.8);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* === Fix Mobile Touch States === */
+/* Remove all unwanted touch/active states */
+.floating-basket-button,
+.whatsapp-button,
+.basket-icon,
+.add-to-basket,
+.checkout-button,
+.close-basket,
+.close-modal,
+button {
+  /* Disable iOS tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  /* Disable iOS callout */
+  -webkit-touch-callout: none;
+  /* Disable text selection */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Remove focus outline on touch */
+  outline: none;
+  /* Prevent context menu */
+  -webkit-context-menu: none;
+}
+
+/* Remove active/pressed states that interfere with JavaScript */
+.floating-basket-button:active,
+.floating-basket-button:focus,
+.floating-basket-button[aria-pressed],
+.basket-icon:active,
+.basket-icon:focus,
+.basket-icon[aria-pressed],
+.whatsapp-button:active,
+.whatsapp-button:focus {
+  background-color: inherit !important;
+  color: inherit !important;
+  transform: none !important;
+  opacity: 1 !important;
+  /* Force immediate reset */
+  transition: none !important;
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .floating-basket-button,
+  .basket-icon,
+  .whatsapp-button {
+    /* Prevent iOS from applying any visual feedback */
+    -webkit-appearance: none;
+    appearance: none;
+    /* Ensure touch events work immediately */
+    touch-action: manipulation;
+  }
+}
+
+/* Force immediate click response on mobile */
+@media (max-width: 768px) {
+  .floating-basket-button,
+  .basket-icon,
+  .whatsapp-button,
+  .add-to-basket {
+    /* Faster touch response */
+    touch-action: manipulation;
+    /* Remove any delay */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    /* Ensure immediate visual feedback through JS only */
+    transition: none;
+  }
+}
