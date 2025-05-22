@@ -587,7 +587,7 @@ function hideThankYouModal() {
 async function submitOrder(formData) {
   // Your actual Google Apps Script Web App URL
   const googleSheetsUrl =
-    'https://script.google.com/macros/s/AKfycbx02bArrx66Ic5qrsef_V0-dsxk6boIGoKWDuEfN-FnkrGDoVbbWlCQfwfPSUpKCZIQ1w/exec';
+    'https://script.google.com/macros/s/AKfycbyfkNmxb-u4B93NghfwL2GzgWMakobYLfsqaVRnMM4y5mUSClQBbk3s0t5xpspqTTFZyQ/exec';
 
   const orderData = {
     customer: {
@@ -651,24 +651,32 @@ async function submitOrder(formData) {
     }
   });
 
-  // Prepare data for Google Sheets - EXACT format expected by the script
-  const submissionData = {
-    timestamp: new Date().toISOString(),
-    fullName: `${orderData.customer.firstName} ${orderData.customer.lastName}`,
-    firstName: orderData.customer.firstName,
-    lastName: orderData.customer.lastName,
-    phone: orderData.customer.phone,
-    orderDate: new Date().toLocaleDateString('he-IL'),
-    notes: orderData.customer.notes || 'ללא הערות',
-    totalAmount: orderData.totalAmount,
-    totalAmountFormatted: `₪${orderData.totalAmount}`,
-    // Add all product quantities
-    ...productQuantities,
-    // Add detailed order items as JSON string for backup
-    orderItems: JSON.stringify(orderData.order),
-  };
+  // Create FormData instead of JSON (to avoid CORS preflight)
+  const formDataToSend = new FormData();
 
-  console.log('Sending order data:', submissionData); // Debug log
+  // Add basic order info
+  formDataToSend.append('timestamp', new Date().toISOString());
+  formDataToSend.append(
+    'fullName',
+    `${orderData.customer.firstName} ${orderData.customer.lastName}`
+  );
+  formDataToSend.append('firstName', orderData.customer.firstName);
+  formDataToSend.append('lastName', orderData.customer.lastName);
+  formDataToSend.append('phone', orderData.customer.phone);
+  formDataToSend.append('orderDate', new Date().toLocaleDateString('he-IL'));
+  formDataToSend.append('notes', orderData.customer.notes || 'ללא הערות');
+  formDataToSend.append('totalAmount', orderData.totalAmount);
+  formDataToSend.append('totalAmountFormatted', `₪${orderData.totalAmount}`);
+
+  // Add all product quantities
+  Object.entries(productQuantities).forEach(([key, value]) => {
+    formDataToSend.append(key, value);
+  });
+
+  // Add order items as JSON string
+  formDataToSend.append('orderItems', JSON.stringify(orderData.order));
+
+  console.log('Sending order via FormData to avoid CORS'); // Debug log
 
   try {
     // Show loading state
@@ -677,36 +685,24 @@ async function submitOrder(formData) {
     submitButton.textContent = 'שולח...';
     submitButton.disabled = true;
 
-    // Use timeout to prevent hanging
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
+    // Use no-cors mode to avoid CORS preflight
     const response = await fetch(googleSheetsUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(submissionData),
-      signal: controller.signal,
+      mode: 'no-cors', // This prevents CORS errors but limits response reading
+      body: formDataToSend,
     });
-
-    clearTimeout(timeoutId);
 
     // Reset button state
     submitButton.textContent = originalText;
     submitButton.disabled = false;
 
-    console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
+    console.log('Request sent successfully (no-cors mode)');
 
-    // For Google Apps Script, even with CORS issues, a 200 status usually means success
-    if (response.status === 200 || response.ok) {
-      clearBasket();
-      hideCheckoutModal();
-      showThankYouModal();
-    } else {
-      throw new Error(`Server returned status: ${response.status}`);
-    }
+    // With no-cors mode, we can't read the response but the request should go through
+    // We'll assume success if no error was thrown
+    clearBasket();
+    hideCheckoutModal();
+    showThankYouModal();
   } catch (error) {
     console.error('Error submitting order:', error);
 
@@ -715,15 +711,7 @@ async function submitOrder(formData) {
     submitButton.textContent = 'סיום ושליחת הזמנה';
     submitButton.disabled = false;
 
-    // If it's a timeout or abort error, still try to proceed (Google Sheets might have received it)
-    if (error.name === 'AbortError') {
-      console.log('Request timed out, but order might have been processed');
-      clearBasket();
-      hideCheckoutModal();
-      showThankYouModal();
-    } else {
-      alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
-    }
+    alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
   }
 }
 
