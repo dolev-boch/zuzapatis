@@ -584,6 +584,8 @@ function hideThankYouModal() {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
 }
+// Updated submitOrder function for your client-side JavaScript
+
 function submitOrder(formData) {
   const orderData = {
     customer: {
@@ -663,7 +665,7 @@ function submitOrder(formData) {
 
   // Your Google Apps Script URL
   const baseUrl =
-    'https://script.google.com/macros/s/AKfycbwS1gUIqJ_q35pIW3ZvBtmUfe0HJfTIbHcgstXgB5Ot7xkWAksP9j7i4xSqFFm_R2ZAjg/exec';
+    'https://script.google.com/macros/s/AKfycbwAFaXkbXonj3duQCFYg5jbt3WdGKh7F4kbOmVTynifL5wV5kf-Co1rMDff-g5VUwmNbQ/exec';
   const url = `${baseUrl}?${params.toString()}`;
 
   console.log('📡 JSONP URL:', url);
