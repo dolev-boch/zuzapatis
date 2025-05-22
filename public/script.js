@@ -288,7 +288,7 @@ function addProductEventListeners() {
       input.value = 1;
 
       // Show a brief toast notification for better feedback
-      showToastNotification(`נוספה ${quantity} יח' לסל`);
+      showToastNotification(`נוספו ${quantity} יח' לסל`);
     });
 
     // Add touch swipe support to close quantity selector

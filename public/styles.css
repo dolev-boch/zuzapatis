@@ -156,7 +156,7 @@ header {
 
 /* === Main Content === */
 main {
-  padding: 24px 0 80px;
+  padding: 24px 0 140px; /* Increased bottom padding for floating buttons */
 }
 
 .section-title {
@@ -344,17 +344,23 @@ main {
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: var(--transition);
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Faster transitions */
   display: flex;
   flex-direction: column;
   position: relative;
   height: 100%;
   border: 1px solid var(--gray-200);
+  /* Hardware acceleration for smooth animations */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform, box-shadow;
+  /* Fix paint performance */
+  contain: layout style paint;
 }
 
 .product-card:hover,
 .product-card:focus-within {
-  transform: translateY(-5px);
+  transform: translateY(-3px) translateZ(0); /* Reduced movement for better performance */
   box-shadow: var(--shadow);
   border-color: var(--gray-300);
 }
@@ -417,7 +423,6 @@ main {
   transform: translateY(-2px);
 }
 
-/* === Basket Sidebar === */
 .basket-sidebar {
   position: fixed;
   top: 0;
@@ -425,15 +430,18 @@ main {
   transform: translateX(-100%);
   width: 100%;
   max-width: 400px;
-  height: 100dvh;
+  height: 100vh;
   background-color: var(--white);
   box-shadow: var(--shadow-lg);
   z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  /* Remove performance-breaking properties */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .basket-sidebar.show {
@@ -911,6 +919,11 @@ main {
   visibility: visible;
 }
 
+.floating-basket-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateZ(0) scale(0.8);
+}
 /* WhatsApp Button */
 .whatsapp-button {
   position: fixed;
@@ -928,17 +941,18 @@ main {
   box-shadow: var(--shadow);
   z-index: 100;
   transition: var(--transition);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .whatsapp-button:hover,
 .whatsapp-button:focus {
-  transform: translateY(-5px);
+  transform: translateY(-5px) translateZ(0);
   box-shadow: var(--shadow-lg);
   background-color: #20ba5a;
   color: white;
   text-decoration: none;
 }
-
 /* === Responsive Styles === */
 @media (max-width: 992px) {
   .products-grid {
@@ -996,6 +1010,21 @@ main {
 }
 
 @media (max-width: 576px) {
+  .floating-basket-button {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    bottom: 16px;
+    left: 80px;
+  }
+
+  .whatsapp-button {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    bottom: 16px;
+    left: 16px;
+  }
   .container {
     padding: 0 10px;
   }
@@ -1074,7 +1103,7 @@ main {
     min-height: 44px;
   }
   .modal {
-    align-items: flex-end; /* Position modal from bottom on mobile */
+    align-items: flex-end;
   }
 
   .modal-content {
@@ -1083,7 +1112,8 @@ main {
     margin: 0;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    max-height: 85vh;
+    max-height: 90vh;
+    transform: translateY(20px) translateZ(0);
   }
   .form-actions {
     padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0));
@@ -1253,6 +1283,10 @@ main {
 /* === General Styles === */
 html {
   scroll-behavior: smooth;
+  /* Fix iOS scroll performance */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent scroll bounce on iOS */
+  overscroll-behavior: none;
 }
 
 body {
@@ -1261,10 +1295,12 @@ body {
   color: var(--text);
   line-height: 1.6;
   direction: rtl;
-  -webkit-tap-highlight-color: transparent; /* Prevents highlight on tap for mobile */
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
   min-height: 100vh;
-  scroll-padding-top: 70px; /* For anchor links, accounts for sticky header */
+  scroll-padding-top: 70px;
+  /* Simplified scroll optimization */
+  -webkit-overflow-scrolling: touch;
 }
 
 .container {
@@ -1322,7 +1358,7 @@ button {
 .floating-basket-button {
   position: fixed;
   bottom: 20px;
-  left: 90px; /* Position next to WhatsApp button */
+  left: 90px;
   background-color: var(--primary);
   color: white;
   width: 60px;
@@ -1333,10 +1369,15 @@ button {
   justify-content: center;
   font-size: 24px;
   box-shadow: var(--shadow);
-  z-index: 100;
+  z-index: 101; /* Higher than WhatsApp button */
   transition: var(--transition);
   border: none;
   cursor: pointer;
+  /* Ensure button stays accessible */
+  pointer-events: auto;
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .floating-basket-button:hover,
@@ -1877,5 +1918,186 @@ button {
 
   .spinner-ring {
     border-top-color: currentColor;
+  }
+}
+/* Ensure last product cards have proper spacing from floating buttons */
+.products-grid .product-card:last-child {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 576px) {
+  main {
+    padding: 24px 0 160px; /* Extra padding on mobile */
+  }
+
+  .products-grid .product-card:last-child {
+    margin-bottom: 30px;
+  }
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .floating-basket-button,
+  .whatsapp-button {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  @media (max-width: 576px) {
+    .floating-basket-button,
+    .whatsapp-button {
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+}
+/* Critical: Optimize scroll containers for mobile performance */
+.basket-items,
+.modal-content {
+  /* Enable hardware acceleration for scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent scroll bounce */
+  overscroll-behavior: contain;
+  /* Optimize scrolling performance */
+  scroll-behavior: smooth;
+  /* Force GPU acceleration */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Fix for iOS momentum scrolling */
+@supports (-webkit-overflow-scrolling: touch) {
+  .basket-items,
+  .modal-content {
+    -webkit-overflow-scrolling: touch;
+    /* Fix scroll lag on iOS */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+/* Critical: Reduce paint operations for better mobile performance */
+.container,
+.products-grid,
+.product-card,
+.basket-sidebar,
+.modal-content {
+  /* Isolate paint operations */
+  contain: layout style paint;
+}
+
+/* Optimize animations for 60fps */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    /* Use transform instead of position changes */
+    transition-property: transform, opacity, background-color, color, box-shadow;
+  }
+}
+
+/* Disable animations on low-end devices */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Floating Basket Button - COMPLETE SECTION */
+.floating-basket-button {
+  position: fixed;
+  bottom: 20px;
+  left: 90px;
+  background-color: var(--primary);
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: var(--shadow);
+  z-index: 101;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.floating-basket-button:hover,
+.floating-basket-button:focus {
+  transform: translateY(-5px) translateZ(0);
+  box-shadow: var(--shadow-lg);
+  background-color: var(--accent);
+  color: white;
+}
+
+.floating-basket-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateZ(0) scale(0.8);
+}
+
+.floating-basket-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--accent);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: bold;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-basket-button.pulse {
+  animation: pulse 0.7s ease-in-out;
+}
+/* Mobile responsive for floating buttons */
+@media (max-width: 768px) {
+  .floating-basket-button {
+    bottom: 20px;
+    left: 85px;
+  }
+}
+
+@media (max-width: 576px) {
+  .floating-basket-button {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    bottom: 16px;
+    left: 80px;
+  }
+
+  .floating-basket-count {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+
+  .whatsapp-button {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .modal {
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 90vh;
   }
 }
