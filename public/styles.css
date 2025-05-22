@@ -1814,6 +1814,7 @@ button {
 .loading-overlay.show {
   opacity: 1;
   visibility: visible;
+  display: flex !important;
 }
 
 .loading-content {
