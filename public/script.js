@@ -586,7 +586,9 @@ function hideThankYouModal() {
 }
 // Submit Order to Webhook
 async function submitOrder(formData) {
-  const formspreeUrl = 'https://formspree.io/f/mdkgvekr';
+  // Your actual Google Apps Script Web App URL
+  const googleSheetsUrl =
+    'https://script.google.com/macros/s/AKfycbx02bArrx66Ic5qrsef_V0-dsxk6boIGoKWDuEfN-FnkrGDoVbbWlCQfwfPSUpKCZIQ1w/exec';
 
   const orderData = {
     customer: {
@@ -650,44 +652,57 @@ async function submitOrder(formData) {
     }
   });
 
-  // Prepare data for Formspree with properly ordered fields
+  // Prepare data for Google Sheets
   const submissionData = {
-    '01-שם-מלא': `${orderData.customer.firstName} ${orderData.customer.lastName}`,
-    '02-טלפון-נייד': orderData.customer.phone,
-    '03-תאריך-הזמנה': new Date().toLocaleDateString('he-IL'),
-    '04-הערות-הזמנה': orderData.customer.notes || 'ללא הערות',
-    // Add products with numbered prefixes (05-19)
-    ...Object.keys(productQuantities).reduce((acc, key, index) => {
-      const paddedIndex = String(index + 5).padStart(2, '0');
-      acc[`${paddedIndex}-${key}`] = productQuantities[key];
-      return acc;
-    }, {}),
-    '99-סכום-להזמנה-כולל': `₪${orderData.totalAmount}`,
-    // Only _subject for email notifications, no separate subject field
-    _subject: `הזמנה חדשה שבועות - ${orderData.customer.firstName} ${orderData.customer.lastName}`,
+    timestamp: new Date().toISOString(),
+    fullName: `${orderData.customer.firstName} ${orderData.customer.lastName}`,
+    firstName: orderData.customer.firstName,
+    lastName: orderData.customer.lastName,
+    phone: orderData.customer.phone,
+    orderDate: new Date().toLocaleDateString('he-IL'),
+    notes: orderData.customer.notes || 'ללא הערות',
+    totalAmount: orderData.totalAmount,
+    totalAmountFormatted: `₪${orderData.totalAmount}`,
+    // Add all product quantities
+    ...productQuantities,
+    // Add detailed order items as JSON string for backup
+    orderItems: JSON.stringify(orderData.order),
   };
 
   try {
-    // Add small delay to avoid spam detection
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Show loading state
+    const submitButton = document.querySelector('.submit-button');
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'שולח...';
+    submitButton.disabled = true;
 
-    const response = await fetch(formspreeUrl, {
+    const response = await fetch(googleSheetsUrl, {
       method: 'POST',
+      mode: 'no-cors', // Required for Google Apps Script
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(submissionData),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // Note: With 'no-cors' mode, we can't check response status
+    // We'll assume success and handle errors through timeout or other means
+
+    // Reset button state
+    submitButton.textContent = originalText;
+    submitButton.disabled = false;
 
     clearBasket();
     hideCheckoutModal();
     showThankYouModal();
   } catch (error) {
     console.error('Error submitting order:', error);
+
+    // Reset button state
+    const submitButton = document.querySelector('.submit-button');
+    submitButton.textContent = 'סיום ושליחת הזמנה';
+    submitButton.disabled = false;
+
     alert('המערכת נתקלה בשגיאה, צרו איתנו קשר טלפוני 04-842-2355');
   }
 }
