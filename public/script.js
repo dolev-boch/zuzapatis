@@ -603,11 +603,13 @@ function submitOrder(formData) {
     totalAmount: basket.reduce((total, item) => total + item.price * item.quantity, 0),
   };
 
-  // Show loading state
-  const submitButton = document.querySelector('.submit-button');
-  const originalText = submitButton.textContent;
-  submitButton.textContent = 'שולח הזמנה...';
-  submitButton.disabled = true;
+  // Show loading overlay
+  showLoadingSpinner();
+
+  // Set up secondary message timer
+  const secondaryMessageTimer = setTimeout(() => {
+    showSecondaryLoadingMessage();
+  }, 2000);
 
   console.log('🚀 Submitting order via JSONP:', orderData);
 
@@ -619,16 +621,16 @@ function submitOrder(formData) {
   window[callbackName] = function (response) {
     console.log('📞 JSONP callback received:', response);
 
-    // Cleanup
+    // Clear timers and cleanup
+    clearTimeout(secondaryMessageTimer);
     if (script && script.parentNode) {
       document.head.removeChild(script);
     }
     delete window[callbackName];
     clearTimeout(timeoutId);
 
-    // Reset button state
-    submitButton.textContent = originalText;
-    submitButton.disabled = false;
+    // Hide loading spinner
+    hideLoadingSpinner();
 
     if (response && response.success) {
       console.log('✅ Order submitted successfully via JSONP');
@@ -677,15 +679,15 @@ function submitOrder(formData) {
     console.error('💥 JSONP script loading failed');
 
     // Cleanup
+    clearTimeout(secondaryMessageTimer);
     if (script.parentNode) {
       document.head.removeChild(script);
     }
     delete window[callbackName];
     clearTimeout(timeoutId);
 
-    // Reset button state
-    submitButton.textContent = originalText;
-    submitButton.disabled = false;
+    // Hide loading spinner
+    hideLoadingSpinner();
 
     alert(
       'שגיאה בחיבור לשרת. אנא בדקו את החיבור לאינטרנט ונסו שוב, או צרו קשר טלפוני: 04-842-2355'
@@ -696,14 +698,14 @@ function submitOrder(formData) {
   const timeoutId = setTimeout(() => {
     console.error('⏰ JSONP request timed out');
 
+    clearTimeout(secondaryMessageTimer);
     if (script && script.parentNode) {
       document.head.removeChild(script);
     }
     delete window[callbackName];
 
-    // Reset button state
-    submitButton.textContent = originalText;
-    submitButton.disabled = false;
+    // Hide loading spinner
+    hideLoadingSpinner();
 
     alert(
       'תם הזמן המוקצב לשליחת ההזמנה. ייתכן שהרשת איטית.\n\nאנא נסו שוב או צרו קשר טלפוני: 04-842-2355'
@@ -712,6 +714,47 @@ function submitOrder(formData) {
 
   // Add script to head to execute JSONP request
   document.head.appendChild(script);
+}
+// Loading spinner helper functions
+function showLoadingSpinner() {
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const secondaryText = document.getElementById('loading-secondary-text');
+
+  if (loadingOverlay) {
+    loadingOverlay.classList.add('show');
+    loadingOverlay.setAttribute('aria-hidden', 'false');
+
+    // Reset secondary text
+    secondaryText.style.display = 'none';
+    secondaryText.classList.remove('show');
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function hideLoadingSpinner() {
+  const loadingOverlay = document.getElementById('loading-overlay');
+
+  if (loadingOverlay) {
+    loadingOverlay.classList.remove('show');
+    loadingOverlay.setAttribute('aria-hidden', 'true');
+
+    // Restore body scroll
+    document.body.style.overflow = '';
+  }
+}
+
+function showSecondaryLoadingMessage() {
+  const secondaryText = document.getElementById('loading-secondary-text');
+
+  if (secondaryText) {
+    secondaryText.style.display = 'block';
+    // Small delay for smooth transition
+    setTimeout(() => {
+      secondaryText.classList.add('show');
+    }, 50);
+  }
 }
 // Clear basket
 function clearBasket() {
