@@ -650,19 +650,20 @@ async function submitOrder(formData) {
     }
   });
 
-  // Prepare data for Formspree with ordered fields
+  // Prepare data for Formspree with properly ordered fields
   const submissionData = {
     '01-שם-מלא': `${orderData.customer.firstName} ${orderData.customer.lastName}`,
     '02-טלפון-נייד': orderData.customer.phone,
-    '03-הערות-הזמנה': orderData.customer.notes || 'ללא הערות',
-    '04-תאריך-הזמנה': new Date().toLocaleDateString('he-IL'),
-    // Add products with numbered prefixes
+    '03-תאריך-הזמנה': new Date().toLocaleDateString('he-IL'),
+    '04-הערות-הזמנה': orderData.customer.notes || 'ללא הערות',
+    // Add products with numbered prefixes (05-19)
     ...Object.keys(productQuantities).reduce((acc, key, index) => {
       const paddedIndex = String(index + 5).padStart(2, '0');
       acc[`${paddedIndex}-${key}`] = productQuantities[key];
       return acc;
     }, {}),
     '99-סכום-להזמנה-כולל': `₪${orderData.totalAmount}`,
+    // Only _subject for email notifications, no separate subject field
     _subject: `הזמנה חדשה שבועות - ${orderData.customer.firstName} ${orderData.customer.lastName}`,
   };
 
