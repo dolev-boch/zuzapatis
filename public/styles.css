@@ -1836,54 +1836,24 @@ button {
 }
 
 .loading-spinner {
-  position: relative;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.loading-spinner img {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+
+/* Remove spinner rings - not needed anymore */
 .spinner-ring {
-  position: absolute;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
-  border: 8px solid transparent;
-  border-top: 8px solid var(--accent);
-  border-radius: 50%;
-  animation: spin 1.2s linear infinite;
+  display: none;
 }
-
-.spinner-ring:nth-child(1) {
-  animation-delay: -0.45s;
-  border-top-color: var(--accent);
-  animation: spin 1.2s linear infinite;
-}
-
-.spinner-ring:nth-child(2) {
-  animation-delay: -0.3s;
-  border-top-color: var(--primary);
-  animation: spin 1.2s linear infinite;
-}
-
-.spinner-ring:nth-child(3) {
-  animation-delay: -0.15s;
-  border-top-color: var(--accent);
-  animation: spin 1.2s linear infinite;
-}
-
-.spinner-ring:nth-child(4) {
-  border-top-color: var(--light-accent);
-  animation: spin 1.2s linear infinite;
-}
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .loading-text {
   color: var(--primary);
 }
@@ -1917,17 +1887,13 @@ button {
   }
 
   .loading-spinner {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 20px;
+    width: 80px;
+    height: 80px;
   }
 
-  .spinner-ring {
-    width: 48px;
-    height: 48px;
-    margin: 6px;
-    border-width: 6px;
-    border-top-width: 6px;
+  .loading-spinner img {
+    width: 80px;
+    height: 80px;
   }
 
   .loading-main-text {
@@ -1941,10 +1907,6 @@ button {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .spinner-ring {
-    animation: spin 2s linear infinite;
-  }
-
   .loading-content,
   .loading-secondary-text {
     transition: none;
@@ -1955,10 +1917,6 @@ button {
 @media (prefers-contrast: high) {
   .loading-overlay {
     background-color: rgba(0, 0, 0, 0.95);
-  }
-
-  .spinner-ring {
-    border-top-color: currentColor;
   }
 }
 /* Ensure last product cards have proper spacing from floating buttons */
