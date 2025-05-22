@@ -586,46 +586,93 @@ function hideThankYouModal() {
 }
 // Submit Order to Webhook
 async function submitOrder(formData) {
-  const webhookUrl = 'https://hook.eu2.make.com/sq44pfhp3uqrdmj7on6zp4osy0ci4duy';
+  const formspreeUrl = 'https://formspree.io/f/mdkgvekr';
 
   const orderData = {
     customer: {
       firstName: formData.get('firstName'),
       lastName: formData.get('lastName'),
-      email: formData.get('email') || undefined,
-      phone: formData.get('phone') || undefined,
-      address: formData.get('address') || undefined,
-      notes: formData.get('notes') || undefined,
+      phone: formData.get('phone'),
+      notes: formData.get('notes') || '',
     },
     order: basket.map((item) => ({
       id: item.id,
       title: item.title,
-      price: item.price,
       quantity: item.quantity,
       total: item.price * item.quantity,
     })),
-    orderDate: new Date().toISOString(),
     totalAmount: basket.reduce((total, item) => total + item.price * item.quantity, 0),
   };
 
-  console.log('Order data ready to send to webhook:', orderData);
+  // Create object with all possible products (set to 0 by default)
+  const productQuantities = {
+    'גבינה-באסקית': 0,
+    'גבינה-ניו-יורק': 0,
+    'גבינה-פירורים': 0,
+    'פרסבורגר-גבינה': 0,
+    'גבינה-פקאן': 0,
+    'גבינה-סבלה-קקאו': 0,
+    'בלינצס-גבינה-פירורים': 0,
+    'פחזניות-קראמבל-וניל': 0,
+    'קיש-בטטה': 0,
+    'קיש-ים-תיכוני': 0,
+    'קיש-בצל-פרמזן': 0,
+    'קיש-עגבניות-שרי-צלויות': 0,
+    'מאפה-עלים-גבינות-ותרד': 0,
+    'מארז-מאפי-קרואסון-בשלושה-טעמים': 0,
+    'מארז-בלינצס-גבינות': 0,
+  };
+
+  // Create mapping from original titles to form field names (handle Hebrew properly)
+  const titleMapping = {
+    'גבינה באסקית': 'גבינה-באסקית',
+    'גבינה ניו-יורק': 'גבינה-ניו-יורק',
+    'גבינה פירורים': 'גבינה-פירורים',
+    'פרסבורגר גבינה': 'פרסבורגר-גבינה',
+    'גבינה פקאן': 'גבינה-פקאן',
+    'גבינה סבלה קקאו': 'גבינה-סבלה-קקאו',
+    "בלינצ'ס גבינה פירורים": 'בלינצס-גבינה-פירורים',
+    'פחזניות קראמבל וניל': 'פחזניות-קראמבל-וניל',
+    'קיש בטטה': 'קיש-בטטה',
+    'קיש ים תיכוני': 'קיש-ים-תיכוני',
+    'קיש בצל פרמזן': 'קיש-בצל-פרמזן',
+    'קיש עגבניות שרי צלויות ': 'קיש-עגבניות-שרי-צלויות',
+    'מאפה עלים גבינות ותרד': 'מאפה-עלים-גבינות-ותרד',
+    'מארז מאפי קרואסון בשלושה טעמים': 'מארז-מאפי-קרואסון-בשלושה-טעמים',
+    "מארז בלינצ'ס גבינות": 'מארז-בלינצס-גבינות',
+  };
+
+  // Fill in actual quantities from basket
+  orderData.order.forEach((item) => {
+    const mappedTitle = titleMapping[item.title];
+    if (mappedTitle && productQuantities.hasOwnProperty(mappedTitle)) {
+      productQuantities[mappedTitle] = item.quantity;
+    }
+  });
+
+  // Prepare data for Formspree
+  const submissionData = {
+    'שם-מלא': `${orderData.customer.firstName} ${orderData.customer.lastName}`,
+    'טלפון-נייד': orderData.customer.phone,
+    'הערות-הזמנה': orderData.customer.notes || 'ללא הערות',
+    'סה-כ-סכום': `₪${orderData.totalAmount}`,
+    'תאריך-הזמנה': new Date().toLocaleDateString('he-IL'),
+    _subject: `הזמנה חדשה שבועות - ${orderData.customer.firstName} ${orderData.customer.lastName}`,
+    ...productQuantities, // Spread all product quantities
+  };
 
   try {
-    const response = await fetch(webhookUrl, {
+    const response = await fetch(formspreeUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderData),
+      body: JSON.stringify(submissionData),
     });
 
     if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    // קורא את התגובה כטקסט ולא JSON
-    const responseText = await response.text();
-    console.log('Order successfully submitted, response:', responseText);
 
     clearBasket();
     hideCheckoutModal();
