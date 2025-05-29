@@ -922,6 +922,24 @@ function isValidPhone(phone) {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+  // CRITICAL: Check order closure FIRST before rendering anything
+  const targetTime = ORDER_CLOSURE_CONFIG.effectiveTargetTime;
+  const now = new Date();
+
+  console.log('🕐 Current time:', now.toLocaleString('he-IL'));
+  console.log('🎯 Target time:', targetTime.toLocaleString('he-IL'));
+  console.log('📊 Orders closed?', now >= targetTime);
+
+  if (now >= targetTime) {
+    // Orders are closed - show overlay immediately and don't render the app
+    console.log('🚫 Orders closed - showing closure overlay immediately');
+    showOrderClosureOverlay();
+    return; // Exit early - don't initialize the rest of the app
+  }
+
+  console.log('✅ Orders are open - initializing app');
+
+  // Orders are still open - initialize the app normally
   fixMobileTouchEvents();
 
   // Render products
@@ -1204,3 +1222,177 @@ function nextSlide() {
   // Show next slide
   slides[slideIndex].classList.add('show');
 }
+// === Order Closure System ===
+const ORDER_CLOSURE_CONFIG = {
+  // Production target time: May 29, 2025 at 15:14 Israel time
+  targetTime: new Date('2025-05-29T13:00:00.000Z'),
+  // Auto-detect development environment
+  testMode: false,
+  testDelay: 0,
+  // Development override: for testing, you can set this to true
+  forceClosureForTesting: false,
+  // Get effective target time
+  get effectiveTargetTime() {
+    // Check if running on localhost/development
+    const isLocalhost =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '' ||
+      window.location.port !== '';
+
+    // If force testing is enabled, show closure immediately
+    if (this.forceClosureForTesting) {
+      return new Date('2024-01-01T00:00:00.000Z'); // Past date = immediate trigger
+    }
+
+    // For both localhost and production: use actual target time
+    return this.targetTime;
+  },
+};
+function initOrderClosureSystem() {
+  const overlay = document.getElementById('order-closure-overlay');
+  if (!overlay) {
+    console.error('Order closure overlay not found');
+    return;
+  }
+
+  // Get effective target time (auto-detects localhost vs production)
+  const targetTime = ORDER_CLOSURE_CONFIG.effectiveTargetTime;
+  const now = new Date();
+
+  // Check if running on localhost
+  const isLocalhost =
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === '' ||
+    window.location.port !== '';
+
+  if (isLocalhost) {
+    console.log('🧪 Development mode: Order closure will trigger immediately');
+  } else {
+    console.log(
+      '⏰ Production mode: Order closure scheduled for:',
+      targetTime.toLocaleString('he-IL')
+    );
+  }
+
+  // Check if we should show the overlay immediately
+  if (now >= targetTime) {
+    showOrderClosureOverlay();
+    return;
+  }
+
+  // Calculate delay until target time
+  const delay = targetTime.getTime() - now.getTime();
+
+  // Set timeout to show overlay at target time
+  setTimeout(() => {
+    showOrderClosureOverlay();
+  }, delay);
+
+  console.log(`⏰ Order closure will activate in ${Math.round(delay / 1000)} seconds`);
+}
+
+// Show the order closure overlay
+function showOrderClosureOverlay() {
+  const overlay = document.getElementById('order-closure-overlay');
+  if (!overlay) return;
+
+  console.log('🚫 Order closure activated');
+
+  // Hide entire page content and show only overlay
+  document.body.classList.add('orders-closed');
+
+  // Show the overlay
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden', 'false');
+
+  // Disable all interactive elements
+  disableOrderingSystem();
+
+  // Hide floating buttons
+  const floatingBasket = document.getElementById('floating-basket-button');
+  const whatsappButton = document.querySelector('.whatsapp-button');
+
+  if (floatingBasket) floatingBasket.style.display = 'none';
+  if (whatsappButton) whatsappButton.style.display = 'none';
+
+  // Prevent body scroll
+  document.body.style.overflow = 'hidden';
+
+  // Focus trap for accessibility
+  const firstButton = overlay.querySelector('.closure-whatsapp-btn');
+  if (firstButton) {
+  }
+
+  // Add keyboard navigation
+  setupClosureKeyboardNavigation(overlay);
+}
+
+// Disable the ordering system
+function disableOrderingSystem() {
+  // Disable all add to basket buttons
+  const addButtons = document.querySelectorAll('.add-to-basket, .checkout-button');
+  addButtons.forEach((button) => {
+    button.disabled = true;
+    button.style.opacity = '0.5';
+    button.style.cursor = 'not-allowed';
+  });
+
+  // Disable basket toggle
+  const basketToggle = document.getElementById('basket-toggle');
+  if (basketToggle) {
+    basketToggle.style.pointerEvents = 'none';
+    basketToggle.style.opacity = '0.5';
+  }
+
+  // Add visual indicator to products
+  const productCards = document.querySelectorAll('.product-card');
+  productCards.forEach((card) => {
+    card.style.opacity = '0.7';
+    card.style.pointerEvents = 'none';
+  });
+}
+
+// Setup keyboard navigation for closure overlay
+function setupClosureKeyboardNavigation(overlay) {
+  const focusableElements = overlay.querySelectorAll(
+    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+
+  if (focusableElements.length === 0) return;
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  overlay.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+  });
+}
+
+// Utility function to check if current time is past closure time
+function isOrdersClosed() {
+  const now = new Date();
+  return now >= ORDER_CLOSURE_CONFIG.targetTime;
+}
+
+// Export for testing purposes
+window.orderClosureSystem = {
+  show: showOrderClosureOverlay,
+  isOrdersClosed,
+  config: ORDER_CLOSURE_CONFIG,
+};

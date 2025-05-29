@@ -4,8 +4,9 @@ a {
   transition: var(--transition);
 }
 
-a:hover,
-a:focus {
+/* Exclude closure buttons from general link styles */
+a:hover:not(.closure-whatsapp-btn):not(.closure-phone-btn),
+a:focus:not(.closure-whatsapp-btn):not(.closure-phone-btn) {
   color: var(--primary);
   text-decoration: underline;
 }
@@ -2128,5 +2129,301 @@ button {
   .whatsapp-button {
     -webkit-appearance: none;
     appearance: none;
+  }
+}
+/* === Order Closure Overlay === */
+.order-closure-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(28, 37, 32, 0.95), rgba(28, 37, 32, 0.98));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 16000;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s ease;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.order-closure-overlay[aria-hidden='true'] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.order-closure-content {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 40px 32px 32px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: translateY(0);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.order-closure-overlay[aria-hidden='true'] .order-closure-content {
+  transform: translateY(20px);
+}
+
+/* Subtle gradient background for content */
+.order-closure-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, var(--gray-50) 0%, transparent 100%);
+  z-index: -1;
+}
+
+.closure-logo {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.closure-logo-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(184, 153, 89, 0.2);
+  background: transparent; /* ← Remove white background */
+  padding: 0; /* ← Remove padding that created the square effect */
+}
+
+.closure-message {
+  margin-bottom: 32px;
+}
+
+.closure-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.closure-text {
+  font-size: 1.2rem; /* ← Larger, more readable font */
+  line-height: 1.7; /* ← More breathing room between lines */
+  color: var(--gray-800); /* ← Darker text for better contrast */
+  margin: 0 auto;
+  max-width: 360px;
+  text-align: center;
+  font-weight: 500; /* ← Slightly bolder for better readability */
+  letter-spacing: 0.01em; /* ← Tiny spacing for Hebrew readability */
+}
+
+.closure-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.closure-whatsapp-btn,
+.closure-phone-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 140px;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+.closure-whatsapp-btn:hover,
+.closure-whatsapp-btn:focus,
+.closure-whatsapp-btn:visited,
+.closure-phone-btn:hover,
+.closure-phone-btn:focus,
+.closure-phone-btn:visited {
+  text-decoration: none;
+  color: white;
+}
+
+.closure-whatsapp-btn {
+  background: linear-gradient(135deg, #25d366, #20ba5a);
+  color: white;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+}
+
+.closure-phone-btn {
+  background-color: var(--accent); /* ← Solid gold color instead of gradient */
+  color: white;
+  box-shadow: 0 4px 16px rgba(184, 153, 89, 0.3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .closure-whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+  }
+
+  .closure-phone-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(184, 153, 89, 0.4);
+  }
+  /* Active states for mobile touch */
+  .closure-whatsapp-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
+  }
+
+  .closure-phone-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(184, 153, 89, 0.4);
+  }
+
+  /* Icon styling */
+  .closure-whatsapp-btn i,
+  .closure-phone-btn i {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .order-closure-overlay {
+      padding: 16px;
+    }
+
+    .order-closure-content {
+      max-width: 100%;
+      padding: 32px 24px 24px;
+      border-radius: 16px;
+    }
+
+    .closure-title {
+      font-size: 1.6rem;
+    }
+
+    .closure-text {
+      font-size: 1.1rem; /* ← Larger on tablets */
+      max-width: 320px;
+      line-height: 1.8; /* ← More space on smaller screens */
+    }
+
+    .closure-actions {
+      flex-direction: row; /* ← Ensure horizontal */
+      gap: 14px;
+      justify-content: center;
+    }
+
+    .closure-whatsapp-btn,
+    .closure-phone-btn {
+      flex: 0 1 auto; /* ← Flexible but don't grow too much */
+      min-width: 130px;
+      max-width: 160px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .order-closure-content {
+      padding: 28px 20px 20px;
+      margin: 0 8px;
+    }
+
+    .closure-logo-image {
+      width: 64px;
+      height: 64px;
+    }
+
+    .closure-title {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+
+    .closure-text {
+      font-size: 1rem; /* ← Larger on mobile too */
+      line-height: 1.6; /* ← Better spacing */
+      max-width: 280px;
+    }
+
+    .closure-actions {
+      flex-direction: row; /* ← Keep horizontal */
+      gap: 12px; /* ← Space between buttons */
+      justify-content: center; /* ← Center the buttons */
+      flex-wrap: nowrap; /* ← Prevent wrapping */
+    }
+
+    .closure-whatsapp-btn,
+    .closure-phone-btn {
+      flex: 1; /* ← Equal width distribution */
+      max-width: 140px; /* ← Limit button width */
+      min-width: 120px; /* ← Minimum button width */
+      padding: 12px 8px; /* ← Adjust padding for smaller buttons */
+      font-size: 0.9rem; /* ← Slightly smaller text */
+    }
+  }
+
+  /* Safe area support for notched devices */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .order-closure-content {
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    @media (max-width: 576px) {
+      .order-closure-content {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .order-closure-overlay,
+    .order-closure-content,
+    .closure-whatsapp-btn,
+    .closure-phone-btn {
+      transition: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .order-closure-overlay {
+      background: rgba(0, 0, 0, 0.95);
+    }
+
+    .order-closure-content {
+      border: 2px solid var(--primary);
+    }
+  }
+
+  /* Focus states for keyboard navigation */
+  .closure-whatsapp-btn:focus-visible,
+  .closure-phone-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  /* Prevent text selection on buttons */
+  .closure-whatsapp-btn,
+  .closure-phone-btn {
+    -webkit-user-select: none;
+    user-select: none;
   }
 }
